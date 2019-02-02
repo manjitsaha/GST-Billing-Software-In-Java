@@ -4,6 +4,8 @@
 This is a fully functional gst billing software... developed in java... you can use this as a daily driver...
 In this H2 database is used for storing bills and other kind of stuff..
 
+and sorry for the bad style of my code.. because i written this when i just learnt the java , swing and sql.  
+
 to use this you need following libraries :-
 1. h2- 1.4.196.jar
 2. rs2xml.jar
