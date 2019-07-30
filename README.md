@@ -18,6 +18,7 @@ to use this you need following libraries :-
 9. jasperreports-fonts-4.0.2.jar
 10. jasperreports-6.7.0.jar
 11. jdt-compiler.jar
+12. jtattoo.jar
 
 You can find all this jar files on google.. just download it and import in your build path.
 and you are ready to use this...
