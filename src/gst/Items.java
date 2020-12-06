@@ -35,6 +35,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Rectangle;
+import java.awt.event.InputMethodListener;
+import java.awt.event.InputMethodEvent;
 
 public class Items extends JFrame {
 
@@ -116,7 +121,7 @@ public class Items extends JFrame {
 
 		try {
 			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
-			String h = "SELECT * FROM ADDITEMS ORDER BY ITEM_NAME ASC";
+			String h = "SELECT * FROM ADDITEMS";
 			st = con.prepareStatement(h);
 			rs = st.executeQuery();
 
@@ -194,6 +199,8 @@ public class Items extends JFrame {
 	String name;
 	private JLabel lblNoOfItems;
 	private JLabel itemcount;
+	private JLabel lblNewLabel_1;
+	private JTextField searchTF;
 
 	public void copyItemname() {
 		DefaultTableModel mt = (DefaultTableModel) table.getModel();
@@ -283,6 +290,20 @@ public class Items extends JFrame {
 		getRootPane().getActionMap().put("ESCAPE", escapeAction);
 	}
 
+	public void searchItem() {
+		String sql = "SELECT * FROM ADDITEMS WHERE item_name LIKE '%"+searchTF.getText()+"%' ";
+		
+		try {
+			Connection con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+			PreparedStatement ps = con.prepareStatement(sql);
+			ResultSet rs = ps.executeQuery();
+			table.setModel(net.proteanit.sql.DbUtils.resultSetToTableModel(rs));
+		//	System.out.println(rs);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	public Items() {
 		setUndecorated(true);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -556,12 +577,12 @@ public class Items extends JFrame {
 
 		lblNoOfItems = new JLabel("No. Of Items  :");
 		lblNoOfItems.setFont(new Font("Tahoma", Font.ITALIC, 11));
-		lblNoOfItems.setBounds(225, 446, 76, 14);
+		lblNoOfItems.setBounds(1061, 445, 76, 14);
 		contentPane.add(lblNoOfItems);
 
 		itemcount = new JLabel("");
 		itemcount.setFont(new Font("Tahoma", Font.ITALIC, 11));
-		itemcount.setBounds(302, 446, 37, 14);
+		itemcount.setBounds(1138, 445, 37, 14);
 		contentPane.add(itemcount);
 
 		JPanel panel = new JPanel();
@@ -573,6 +594,27 @@ public class Items extends JFrame {
 		panel_1.setBackground(Color.GRAY);
 		panel_1.setBounds(1198, 0, 185, 760);
 		contentPane.add(panel_1);
+		
+		lblNewLabel_1 = new JLabel("Search");
+		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblNewLabel_1.setBounds(226, 434, 75, 25);
+		contentPane.add(lblNewLabel_1);
+		
+		searchTF = new JTextField();
+		searchTF.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				searchItem();
+				if(searchTF.getText() == "") {
+					itemlist();
+				}
+			}
+		});
+		
+		searchTF.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		searchTF.setBounds(286, 434, 273, 25);
+		contentPane.add(searchTF);
+		searchTF.setColumns(10);
 
 		itemlist();
 		closeFrame();
