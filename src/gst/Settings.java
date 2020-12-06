@@ -25,7 +25,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class ChangeAdmin extends JFrame {
+public class Settings extends JFrame {
 
 	private JPanel contentPane;
 	private JLabel oldpass;
@@ -40,7 +40,7 @@ public class ChangeAdmin extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ChangeAdmin frame = new ChangeAdmin();
+					Settings frame = new Settings();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -127,7 +127,7 @@ public class ChangeAdmin extends JFrame {
 		oldpass.setText(np);
 	}
 	
-	public ChangeAdmin() {
+	public Settings() {
 		setUndecorated(true);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setSize(1383,760);

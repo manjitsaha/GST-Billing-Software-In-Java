@@ -27,13 +27,10 @@ public class CreatingTableAndPreData {
 					+ "item_name VARCHAR(255),"
 					+ "manufacturer varchar(255),"
 					+ "sac_hsn int(255),"
-					+ "packs int(10),"
 					+ "sale_rate float(10),"
 					+ "purchase_rate float(10),"
 					+ "Tax int(2),"
-					+ "stock int(10),"
-					+ "description VARCHAR(255),"
-					+ "remarks VARCHAR(255))";
+					+ "stock int(10))";
 			st.execute(q);
 			
 			
@@ -49,15 +46,13 @@ public class CreatingTableAndPreData {
 					+ "pin int(8),"
 					+ "email_id VARCHAR(255),"
 					+ "website VARCHAR(255),"
-					+ "mobile_no long(10),"
+					+ "mobile_no VARCHAR(10),"
 					+ "establishment_date VARCHAR(10),"
 					+ "gst_number VARCHAR(20),"
 					+ "gst_date VARCHAR(10),"
 					+ "gst_category VARCHAR(255),"
 					+ "pan VARCHAR(20),"
-					+ "pan_date VARCHAR(10),"
-					+ "tan VARCHAR(255),"
-					+ "tan_date VARCHAR(255))";
+					+ "pan_date VARCHAR(10))";
 			
 			st.execute(c);
 			
@@ -169,10 +164,10 @@ public class CreatingTableAndPreData {
 					+ "add2 varchar(100),"
 					+ "pin int(10),"
 					+ "website varchar(50),"
-					+ "mob_no long(12),"
-					+ "alt_mob long(12),"
-					+ "fax int(10),"
-					+ "phone int(10),"
+					+ "mob_no varchar(12),"
+					+ "alt_mob varchar(12),"
+					+ "fax varchar(10),"
+					+ "phone varchar(10),"
 					+ "gst varchar(20),"
 					+ "pan varchar(20),"
 					+ "pan_Date varchar(10),"
@@ -221,7 +216,6 @@ public class CreatingTableAndPreData {
 			 		+ "(Sr int auto_increment,"
 			 		+ "batch varchar(10),"
 			 		+ "ITEM_NAME VARCHAR(100),"
-			 		+ "packs int(5),"
 			 		+ "MFG VARCHAR(100),"
 			 		+ "SAC_HSN int(100),"
 			 		+ "QTY int(10),"

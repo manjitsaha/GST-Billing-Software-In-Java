@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.15.0.final using JasperReports Library version 6.15.0-dd49bfb94918336b8321d5507193f0169ead4e95  -->
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 6.16.0-48579d909b7943b64690c65c71e07e0b80981928  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="GSTls" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="755fb00c-57c6-4df0-ab7d-21e32f3ff488">
 	<property name="com.jaspersoft.studio.data.sql.tables" value="IlRFTVBJTlYiICwxNSwxNSw0ZDhmYTE0MC1hNzdhLTRhMjctOTM0MC0yMTQ2ODUyM2UyMWM7"/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.xml"/>
@@ -92,10 +92,6 @@ FROM "TEMPINV"]]>
 		</field>
 		<field name="ITEM_NAME" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.label" value="ITEM_NAME"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="TEMPINV"/>
-		</field>
-		<field name="PACKS" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.label" value="PACKS"/>
 			<property name="com.jaspersoft.studio.field.tree.path" value="TEMPINV"/>
 		</field>
 		<field name="MFG" class="java.lang.String">
@@ -401,7 +397,7 @@ FROM "TEMPINV"]]>
 					</datasetRun>
 					<jr:column width="20" uuid="80b37c8c-0757-4945-814b-c5494277ad33">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
-						<jr:columnHeader style="Table_CH" height="20">
+						<jr:columnHeader style="Table_CH" height="20" rowSpan="1">
 							<staticText>
 								<reportElement mode="Opaque" x="0" y="0" width="20" height="20" uuid="9209a01f-caa2-4584-aa80-bd5ca9a8b902"/>
 								<text><![CDATA[SR]]></text>
@@ -420,7 +416,7 @@ FROM "TEMPINV"]]>
 					</jr:column>
 					<jr:column width="40" uuid="4c5f3204-067d-405e-9db6-084764b31026">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
-						<jr:columnHeader style="Table_CH" height="20">
+						<jr:columnHeader style="Table_CH" height="20" rowSpan="1">
 							<staticText>
 								<reportElement mode="Opaque" x="0" y="0" width="40" height="20" uuid="0db336d8-47cc-47d9-9500-d729103e317e"/>
 								<box leftPadding="2"/>
@@ -438,18 +434,18 @@ FROM "TEMPINV"]]>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="280" uuid="6d4fe281-4aba-4d9c-889b-4f5eab9377f8">
+					<jr:column width="310" uuid="6d4fe281-4aba-4d9c-889b-4f5eab9377f8">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
-						<jr:columnHeader style="Table_CH" height="20">
+						<jr:columnHeader style="Table_CH" height="20" rowSpan="1">
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="280" height="20" uuid="d6fa4b0d-442b-4eea-bc79-b0b21c067e22"/>
+								<reportElement mode="Opaque" x="0" y="0" width="310" height="20" uuid="d6fa4b0d-442b-4eea-bc79-b0b21c067e22"/>
 								<box leftPadding="110"/>
 								<text><![CDATA[ITEM NAME]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="10">
 							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="280" height="10" uuid="7eb818bc-bda8-4d1a-9a66-d8e9c93263e3"/>
+								<reportElement x="0" y="0" width="310" height="10" uuid="7eb818bc-bda8-4d1a-9a66-d8e9c93263e3"/>
 								<box leftPadding="4"/>
 								<textElement>
 									<font size="7.5"/>
@@ -458,38 +454,18 @@ FROM "TEMPINV"]]>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="40" uuid="ffa64a09-d062-4d7d-beb4-1b073360089f">
+					<jr:column width="160" uuid="569ee489-981e-4fd4-8256-2d25f8af860a">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
-						<jr:columnHeader style="Table_CH" height="20">
+						<jr:columnHeader style="Table_CH" height="20" rowSpan="1">
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="40" height="20" uuid="38253da3-bf02-42d8-90d7-6578efacc705"/>
-								<box leftPadding="2"/>
-								<text><![CDATA[PACKS]]></text>
-							</staticText>
-						</jr:columnHeader>
-						<jr:detailCell style="Table_TD" height="10">
-							<textField>
-								<reportElement x="0" y="0" width="40" height="10" uuid="15cae3e9-afb0-4ea4-926c-c293322bc679"/>
-								<box leftPadding="2"/>
-								<textElement>
-									<font size="7.5"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{PACKS}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="150" uuid="569ee489-981e-4fd4-8256-2d25f8af860a">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
-						<jr:columnHeader style="Table_CH" height="20">
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="150" height="20" uuid="15dbf0e3-6906-4608-8293-5ab64bc4a2d0"/>
+								<reportElement mode="Opaque" x="0" y="0" width="160" height="20" uuid="15dbf0e3-6906-4608-8293-5ab64bc4a2d0"/>
 								<box leftPadding="60"/>
 								<text><![CDATA[MFG]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="10">
 							<textField>
-								<reportElement x="0" y="0" width="150" height="10" uuid="df29e88c-6ae5-4643-a8fd-6df708d8a77b"/>
+								<reportElement x="0" y="0" width="160" height="10" uuid="df29e88c-6ae5-4643-a8fd-6df708d8a77b"/>
 								<box leftPadding="4"/>
 								<textElement>
 									<font size="7.5"/>
@@ -499,8 +475,8 @@ FROM "TEMPINV"]]>
 						</jr:detailCell>
 					</jr:column>
 					<jr:column width="90" uuid="6b41f342-1479-4e3b-8e5e-0cce4ee05050">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
-						<jr:columnHeader style="Table_CH" height="20">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+						<jr:columnHeader style="Table_CH" height="20" rowSpan="1">
 							<staticText>
 								<reportElement mode="Opaque" x="0" y="0" width="90" height="20" uuid="870a3da9-7377-4b13-af58-6e8809978ddd"/>
 								<box leftPadding="25"/>
@@ -519,8 +495,8 @@ FROM "TEMPINV"]]>
 						</jr:detailCell>
 					</jr:column>
 					<jr:column width="30" uuid="e0eee36a-b615-4671-b793-20e5679ed711">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column7"/>
-						<jr:columnHeader style="Table_CH" height="20">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
+						<jr:columnHeader style="Table_CH" height="20" rowSpan="1">
 							<staticText>
 								<reportElement mode="Opaque" x="0" y="0" width="30" height="20" uuid="1b9c3261-ee69-481e-a643-cb1f3b121d31"/>
 								<box leftPadding="3"/>
@@ -539,8 +515,8 @@ FROM "TEMPINV"]]>
 						</jr:detailCell>
 					</jr:column>
 					<jr:column width="60" uuid="0c34a555-24a2-4cfc-b5ab-eb51b2faebe6">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column8"/>
-						<jr:columnHeader style="Table_CH" height="20">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column7"/>
+						<jr:columnHeader style="Table_CH" height="20" rowSpan="1">
 							<staticText>
 								<reportElement mode="Opaque" x="0" y="0" width="60" height="20" uuid="af330b2e-576f-4040-aa12-1ced9c1687d2"/>
 								<box leftPadding="15"/>
@@ -559,8 +535,8 @@ FROM "TEMPINV"]]>
 						</jr:detailCell>
 					</jr:column>
 					<jr:column width="30" uuid="52c48de7-d156-465e-84dc-41b2bd5171af">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column9"/>
-						<jr:columnHeader style="Table_CH" height="20">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column8"/>
+						<jr:columnHeader style="Table_CH" height="20" rowSpan="1">
 							<staticText>
 								<reportElement mode="Opaque" x="0" y="0" width="30" height="20" uuid="1860b677-fc4b-4f7d-9210-25e277a0c147"/>
 								<box leftPadding="4"/>
@@ -579,8 +555,8 @@ FROM "TEMPINV"]]>
 						</jr:detailCell>
 					</jr:column>
 					<jr:column width="30" uuid="66badea8-222c-4604-bfa2-d634271dc25c">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column10"/>
-						<jr:columnHeader style="Table_CH" height="20">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column9"/>
+						<jr:columnHeader style="Table_CH" height="20" rowSpan="1">
 							<staticText>
 								<reportElement mode="Opaque" x="0" y="0" width="30" height="20" uuid="80f6547c-d2fc-47ce-9332-0abef19a1380"/>
 								<box leftPadding="2"/>
@@ -599,8 +575,8 @@ FROM "TEMPINV"]]>
 						</jr:detailCell>
 					</jr:column>
 					<jr:column width="70" uuid="cf563c4f-14cc-4382-8e4e-ab0677625b11">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column11"/>
-						<jr:columnHeader style="Table_CH" height="20">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column10"/>
+						<jr:columnHeader style="Table_CH" height="20" rowSpan="1">
 							<staticText>
 								<reportElement mode="Opaque" x="0" y="0" width="70" height="20" uuid="8046a30d-85e3-4a1a-b033-638d26307269"/>
 								<box leftPadding="15"/>

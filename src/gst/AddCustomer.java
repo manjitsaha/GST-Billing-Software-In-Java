@@ -129,10 +129,10 @@ public class AddCustomer extends JFrame {
 			ps.setString(6, add2);
 			ps.setInt(7, Integer.parseInt(pin));
 			ps.setString(8, webs);
-			ps.setLong(9, Long.parseLong(mobno));
-			ps.setLong(10, Long.parseLong(altmob));
-			ps.setInt(11, Integer.parseInt(fax));
-			ps.setInt(12, Integer.parseInt(phone));
+			ps.setString(9, mobno);
+			ps.setString(10, altmob);
+			ps.setString(11, fax);
+			ps.setString(12, phone);
 			ps.setString(13, gst);
 			ps.setString(14, pan);
 			ps.setString(15, pandate);

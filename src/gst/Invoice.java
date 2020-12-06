@@ -139,7 +139,6 @@ public class Invoice extends JFrame implements Runnable {
 	private JLabel label_1;
 	private JTextField timebox;
 	private JTextField batchtxt;
-	private JTextField packstxt;
 	private JLabel compemail;
 	private JLabel compwebsite;
 	private JLabel custtype;
@@ -262,7 +261,6 @@ public class Invoice extends JFrame implements Runnable {
 				stocktext.setText(rs.getString("stock"));
 				mfgtext.setText(rs.getString("manufacturer"));
 				batchtxt.setText(rs.getString("batch"));
-				packstxt.setText(rs.getString("packs"));
 
 			}
 		} catch (SQLException e) {
@@ -411,14 +409,13 @@ public class Invoice extends JFrame implements Runnable {
 
 		row[0] = batchtxt.getText();
 		row[1] = itemcombo.getSelectedItem().toString();
-		row[2] = packstxt.getText();
-		row[3] = mfgtext.getText();
-		row[4] = sachsntext.getText();
-		row[5] = qtytext.getText();
-		row[6] = pricetext.getText();
-		row[7] = taxtext.getText();
-		row[8] = discounttext.getText();
-		row[9] = total.getText();
+		row[2] = mfgtext.getText();
+		row[3] = sachsntext.getText();
+		row[4] = qtytext.getText();
+		row[5] = pricetext.getText();
+		row[6] = taxtext.getText();
+		row[7] = discounttext.getText();
+		row[8] = total.getText();
 
 		model_table.addRow(row);
 		if (table.getRowCount() > 24) {
@@ -431,7 +428,6 @@ public class Invoice extends JFrame implements Runnable {
 
 		sachsntext.setText("0");
 		qtytext.setText("0");
-
 		pricetext.setText("0");
 		taxtext.setText("0");
 		taxablevalue.setText("0");
@@ -446,6 +442,8 @@ public class Invoice extends JFrame implements Runnable {
 		custadd1.setText(" ");
 		custadd2.setText(" ");
 		custmob.setText(" ");
+		namecombo.setSelectedIndex(0);
+		namecombo.requestFocus();
 	}
 
 	public void IncreasingBillNo() {
@@ -487,7 +485,7 @@ public class Invoice extends JFrame implements Runnable {
 		float total = 0;
 		for (int i = 0; i < table.getRowCount(); i++) {
 
-			float amount = Float.parseFloat((String) table.getValueAt(i, 9));
+			float amount = Float.parseFloat((String) table.getValueAt(i, 8));
 			total += amount;
 		}
 		String tot = String.format("%.2f", total);
@@ -908,7 +906,7 @@ public class Invoice extends JFrame implements Runnable {
 		contentPane.setLayout(null);
 
 		JLabel lblName = new JLabel("Name           :");
-		lblName.setFont(new Font("Times New Roman", Font.PLAIN, 15));
+		lblName.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblName.setBounds(240, 84, 86, 29);
 		contentPane.add(lblName);
 
@@ -1079,6 +1077,7 @@ public class Invoice extends JFrame implements Runnable {
 		contentPane.add(scrollPane);
 
 		table = new JTable();
+		table.setFont(new Font("Tahoma" , Font.PLAIN , 16));
 		table.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -1094,7 +1093,7 @@ public class Invoice extends JFrame implements Runnable {
 		scrollPane.setViewportView(table);
 		table.setModel(model_table);
 
-		Object column_names[] = { "Batch", "Item Name", "Packs", "Mfg", "Sac/Hsn", "Qty", "Price", "Tax(%)",
+		Object column_names[] = { "Batch", "Item Name", "Mfg", "Sac/Hsn", "Qty", "Price", "Tax(%)",
 				"Discount(%)", "Total" };
 
 		model_table.setColumnIdentifiers(column_names);
@@ -1111,12 +1110,7 @@ public class Invoice extends JFrame implements Runnable {
 				}
 			}
 		});
-		btnPrint.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				printInvoice();
-
-			}
-		});
+		
 		btnPrint.setBounds(1035, 674, 89, 23);
 		contentPane.add(btnPrint);
 
@@ -1425,17 +1419,6 @@ public class Invoice extends JFrame implements Runnable {
 		batchtxt.setBounds(736, 198, 73, 20);
 		contentPane.add(batchtxt);
 		batchtxt.setColumns(10);
-
-		JLabel lblPacks = new JLabel("Packs");
-		lblPacks.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		lblPacks.setBounds(902, 293, 46, 14);
-		contentPane.add(lblPacks);
-
-		packstxt = new JTextField();
-		packstxt.setEditable(false);
-		packstxt.setBounds(960, 287, 89, 21);
-		contentPane.add(packstxt);
-		packstxt.setColumns(10);
 
 		compname = new JLabel("");
 		compname.setForeground(new Color(240, 230, 140));

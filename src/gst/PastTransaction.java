@@ -171,11 +171,11 @@ public class PastTransaction extends JFrame {
 		String name = nt.getValueAt(table_1.getSelectedRow(), 4).toString();
 		String mfg = nt.getValueAt(table_1.getSelectedRow(), 5).toString();
 		String sachsn = nt.getValueAt(table_1.getSelectedRow(), 6).toString();
-		String qty = nt.getValueAt(table_1.getSelectedRow(), 8).toString();
-		String price = nt.getValueAt(table_1.getSelectedRow(), 9).toString();
-		String tax = nt.getValueAt(table_1.getSelectedRow(), 10).toString();
-		String disc = nt.getValueAt(table_1.getSelectedRow(), 11).toString();
-		String total = nt.getValueAt(table_1.getSelectedRow(), 12).toString();
+		String qty = nt.getValueAt(table_1.getSelectedRow(), 7).toString();
+		String price = nt.getValueAt(table_1.getSelectedRow(), 8).toString();
+		String tax = nt.getValueAt(table_1.getSelectedRow(), 9).toString();
+		String disc = nt.getValueAt(table_1.getSelectedRow(), 10).toString();
+		String total = nt.getValueAt(table_1.getSelectedRow(), 11).toString();
 		
 		itemCombo.setSelectedItem(name);
 		mfgtxt.setText(mfg);
@@ -368,6 +368,7 @@ public class PastTransaction extends JFrame {
              String total = totaltxt.getText();
              String grandtotal = grandtxt.getText();
              String gtot = grandtotlbl.getText();
+             
             
              
           

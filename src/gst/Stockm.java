@@ -2,6 +2,7 @@ package gst;
 
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -121,6 +122,7 @@ public class Stockm extends JFrame {
 		contentPane.add(scrollPane);
 		
 		table = new JTable();
+		table.setFont(new Font("Tahoma" , Font.PLAIN,16));
 		scrollPane.setViewportView(table);
 		
 		panel = new JPanel();

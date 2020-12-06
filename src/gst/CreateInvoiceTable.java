@@ -38,7 +38,6 @@ public class CreateInvoiceTable  {
 				+ "Item_Name varchar(255),"
 				+ "mfg varchar(255),"
 				+ "sac_hsn int(10),"
-				+ "packs int(10),"
 				+ "Qty INT(10),"
 				+ "Price FLOAT(10),"
 				+ "Tax INT(2),"                         
@@ -56,18 +55,16 @@ public class CreateInvoiceTable  {
 			for(int i = 0 ; i<Invoice.table.getRowCount(); i++) {
 				String batch = (String) Invoice.table.getValueAt(i, 0);
 				String item = (String) Invoice.table.getValueAt(i, 1);
-				String packs = Invoice.table.getValueAt(i, 2).toString();
-				String mfg = (String) Invoice.table.getValueAt(i, 3);
-				String sac = (String) Invoice.table.getValueAt(i, 4);
-				String qty = (String) Invoice.table.getValueAt(i, 5).toString();
-				String price = (String) Invoice.table.getValueAt(i, 6).toString();
-				String tax = (String) Invoice.table.getValueAt(i, 7).toString();
-				String discount = (String) Invoice.table.getValueAt(i, 8).toString();
-				String total = (String) Invoice.table.getValueAt(i, 9).toString();
+				String mfg = (String) Invoice.table.getValueAt(i, 2);
+				String sac = (String) Invoice.table.getValueAt(i, 3);
+				String qty = (String) Invoice.table.getValueAt(i, 4).toString();
+				String price = (String) Invoice.table.getValueAt(i, 5).toString();
+				String tax = (String) Invoice.table.getValueAt(i, 6).toString();
+				String discount = (String) Invoice.table.getValueAt(i, 7).toString();
+				String total = (String) Invoice.table.getValueAt(i, 8).toString();
 				
-				String b = "INSERT INTO "+name+bill+date+"(batch , Item_Name, packs ,  mfg, sac_hsn,  Qty, Price, Tax, Discount,Total) values('"+batch+"',"
+				String b = "INSERT INTO "+name+bill+date+"(batch , Item_Name ,  mfg, sac_hsn,  Qty, Price, Tax, Discount,Total) values('"+batch+"',"
 				+ "'"+item+"',"
-					+ "'"+Integer.parseInt(packs)+"',"
 							+ "'"+mfg+"',"
 								+ "'"+sac+"',"
 										+ "'"+Integer.parseInt(qty)+"',"
@@ -102,18 +99,16 @@ public class CreateInvoiceTable  {
 				for(int i = 0 ; i<Invoice.table.getRowCount(); i++) {
 					String batch = (String) Invoice.table.getValueAt(i, 0);
 					String item = (String) Invoice.table.getValueAt(i, 1);
-					String packs = (String) Invoice.table.getValueAt(i, 2);
-					String mfg = (String) Invoice.table.getValueAt(i, 3);
-					String sac =  Invoice.table.getValueAt(i, 4).toString();
-					String qty = Invoice.table.getValueAt(i, 5).toString();
-					String price = Invoice.table.getValueAt(i, 6).toString();
-					String tax =  Invoice.table.getValueAt(i, 7).toString();
-					String discount =  Invoice.table.getValueAt(i, 8).toString();
-					String total =  Invoice.table.getValueAt(i, 9).toString();
+					String mfg = (String) Invoice.table.getValueAt(i, 2);
+					String sac =  Invoice.table.getValueAt(i, 3).toString();
+					String qty = Invoice.table.getValueAt(i, 4).toString();
+					String price = Invoice.table.getValueAt(i, 5).toString();
+					String tax =  Invoice.table.getValueAt(i, 6).toString();
+					String discount =  Invoice.table.getValueAt(i, 7).toString();
+					String total =  Invoice.table.getValueAt(i, 8).toString();
 					
-					String bd = "INSERT INTO tempinv(batch , Item_Name, packs , mfg, sac_hsn,  Qty, Price, Tax, Disc,Total) values('"+batch+"',"
+					String bd = "INSERT INTO tempinv(batch , Item_Name , mfg, sac_hsn,  Qty, Price, Tax, Disc,Total) values('"+batch+"',"
 							+ "'"+item+"',"
-									+ "'"+Integer.parseInt(packs)+"',"
 							+ "'"+mfg+"',"
 									+ "'"+sac+"',"
 											+ "'"+Integer.parseInt(qty)+"',"
@@ -158,7 +153,6 @@ public class CreateInvoiceTable  {
 					 + "(Sr int auto_increment,"
 				 		+ "batch varchar(10),"
 				 		+ "ITEM_NAME VARCHAR(100),"
-				 		+ "packs int(5),"
 				 		+ "MFG VARCHAR(100),"
 				 		+ "SAC_HSN int(100),"
 				 		+ "QTY int(10),"

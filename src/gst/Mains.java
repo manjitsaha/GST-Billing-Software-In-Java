@@ -2,6 +2,7 @@ package gst;
 
 import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.Toolkit;
@@ -10,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -17,9 +19,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -104,6 +108,15 @@ public class Mains extends JFrame {
 			settingsinternal.dispose();
 		}
 	}
+	
+	public boolean checkIfDatabaseExist() {
+		File f = new File("C:\\SimpleGSTsnacks");
+		if(f.exists()) {			
+			return true;
+		}
+		
+		return false;
+	}
 
 	public Mains() {
 		addMouseListener(new MouseAdapter() {
@@ -164,7 +177,7 @@ public class Mains extends JFrame {
 		button_8.setMnemonic(KeyEvent.VK_Q);
 		button_8.setMargin(new Insets(2, 14, 2, 65));
 		button_8.setForeground(Color.WHITE);
-		button_8.setFont(new Font("SansSerif", Font.PLAIN, 15));
+		button_8.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		button_8.setContentAreaFilled(false);
 		button_8.setBackground(Color.GRAY);
 		button_8.setBounds(0, 56, 127, 45);
@@ -174,7 +187,16 @@ public class Mains extends JFrame {
 		button_9.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				CreatingTableAndPreData a = new CreatingTableAndPreData();
-				a.createDetails();
+				
+				if(checkIfDatabaseExist()) {
+					JOptionPane.showMessageDialog(getParent(), "Database already exist","Error",JOptionPane.WARNING_MESSAGE);
+					
+				}else {
+					a.createDetails();
+					JOptionPane.showMessageDialog(getParent(), "Database created successfully","Success",JOptionPane.INFORMATION_MESSAGE);
+					
+				}
+				
 			}
 		});
 
@@ -182,7 +204,7 @@ public class Mains extends JFrame {
 		button_9.setMnemonic(KeyEvent.VK_N);
 		button_9.setMargin(new Insets(2, 14, 2, 65));
 		button_9.setForeground(Color.WHITE);
-		button_9.setFont(new Font("SansSerif", Font.PLAIN, 15));
+		button_9.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		button_9.setContentAreaFilled(false);
 		button_9.setBackground(Color.GRAY);
 		button_9.setBounds(0, 0, 127, 55);
@@ -206,7 +228,7 @@ public class Mains extends JFrame {
 		});
 		button_12.setMargin(new Insets(2, 0, 2, 52));
 		button_12.setForeground(Color.WHITE);
-		button_12.setFont(new Font("SansSerif", Font.PLAIN, 15));
+		button_12.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		button_12.setContentAreaFilled(false);
 		button_12.setBounds(0, 0, 207, 43);
 		mastersinternal.getContentPane().add(button_12);
@@ -221,7 +243,7 @@ public class Mains extends JFrame {
 		});
 		button_13.setMargin(new Insets(2, 0, 2, 95));
 		button_13.setForeground(Color.WHITE);
-		button_13.setFont(new Font("SansSerif", Font.PLAIN, 15));
+		button_13.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		button_13.setContentAreaFilled(false);
 		button_13.setBounds(10, 48, 197, 43);
 		mastersinternal.getContentPane().add(button_13);
@@ -235,7 +257,7 @@ public class Mains extends JFrame {
 		});
 		button_14.setMargin(new Insets(2, 0, 2, 80));
 		button_14.setForeground(Color.WHITE);
-		button_14.setFont(new Font("SansSerif", Font.PLAIN, 15));
+		button_14.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		button_14.setContentAreaFilled(false);
 		button_14.setBounds(0, 156, 207, 43);
 		mastersinternal.getContentPane().add(button_14);
@@ -250,7 +272,7 @@ public class Mains extends JFrame {
 		});
 		button_15.setMargin(new Insets(2, 0, 2, 80));
 		button_15.setForeground(Color.WHITE);
-		button_15.setFont(new Font("SansSerif", Font.PLAIN, 15));
+		button_15.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		button_15.setContentAreaFilled(false);
 		button_15.setBounds(10, 102, 197, 43);
 		mastersinternal.getContentPane().add(button_15);
@@ -296,7 +318,7 @@ public class Mains extends JFrame {
 		});
 		button_17.setMargin(new Insets(2, 14, 2, 75));
 		button_17.setForeground(Color.WHITE);
-		button_17.setFont(new Font("SansSerif", Font.PLAIN, 15));
+		button_17.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		button_17.setBorderPainted(false);
 		button_17.setBackground(new Color(51, 51, 153));
 		button_17.setBounds(0, 0, 209, 38);
@@ -311,7 +333,7 @@ public class Mains extends JFrame {
 		});
 		button_18.setMargin(new Insets(2, 14, 2, 115));
 		button_18.setForeground(Color.WHITE);
-		button_18.setFont(new Font("SansSerif", Font.PLAIN, 15));
+		button_18.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		button_18.setBorderPainted(false);
 		button_18.setBackground(new Color(51, 51, 153));
 		button_18.setBounds(0, 41, 209, 38);
@@ -331,13 +353,13 @@ public class Mains extends JFrame {
 		JButton button_11 = new JButton("Change Password");
 		button_11.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				ChangeAdmin.main(null);
+				Settings.main(null);
 				closeInternalFrames();
 			}
 		});
 		button_11.setMargin(new Insets(2, 14, 2, 60));
 		button_11.setForeground(Color.WHITE);
-		button_11.setFont(new Font("SansSerif", Font.PLAIN, 15));
+		button_11.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		button_11.setBorderPainted(false);
 		button_11.setBackground(new Color(51, 51, 153));
 		button_11.setBounds(0, 0, 209, 38);
@@ -354,7 +376,7 @@ public class Mains extends JFrame {
 		});
 		textField.setText("Authorised User :-");
 		textField.setForeground(Color.RED);
-		textField.setFont(new Font("SansSerif", Font.PLAIN, 15));
+		textField.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		textField.setEditable(false);
 		textField.setColumns(10);
 		textField.setBorder(null);
@@ -371,7 +393,7 @@ public class Mains extends JFrame {
 		});
 
 		textArea.setForeground(Color.RED);
-		textArea.setFont(new Font("SansSerif", Font.PLAIN, 17));
+		textArea.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		textArea.setEditable(false);
 		textArea.setBorder(null);
 		textArea.setBackground(Color.DARK_GRAY);
@@ -414,7 +436,7 @@ public class Mains extends JFrame {
 		});
 		lblFile.setOpaque(true);
 		lblFile.setBackground(Color.DARK_GRAY);
-		lblFile.setFont(new Font("SansSerif", Font.PLAIN, 19));
+		lblFile.setFont(new Font("Tahoma", Font.PLAIN, 19));
 		lblFile.setForeground(Color.WHITE);
 		lblFile.setBounds(0, 174, 196, 62);
 		contentPane.add(lblFile);
@@ -456,7 +478,7 @@ public class Mains extends JFrame {
 
 		lblMasters.setOpaque(true);
 		lblMasters.setForeground(Color.WHITE);
-		lblMasters.setFont(new Font("SansSerif", Font.PLAIN, 19));
+		lblMasters.setFont(new Font("Tahoma", Font.PLAIN, 19));
 		lblMasters.setBackground(Color.DARK_GRAY);
 		lblMasters.setBounds(0, 237, 196, 62);
 		contentPane.add(lblMasters);
@@ -496,7 +518,7 @@ public class Mains extends JFrame {
 		});
 		lblSale.setOpaque(true);
 		lblSale.setForeground(Color.WHITE);
-		lblSale.setFont(new Font("SansSerif", Font.PLAIN, 19));
+		lblSale.setFont(new Font("Tahoma", Font.PLAIN, 19));
 		lblSale.setBackground(Color.DARK_GRAY);
 		lblSale.setBounds(0, 300, 196, 62);
 		contentPane.add(lblSale);
@@ -515,7 +537,7 @@ public class Mains extends JFrame {
 		});
 		label.setOpaque(true);
 		label.setForeground(Color.WHITE);
-		label.setFont(new Font("SansSerif", Font.PLAIN, 19));
+		label.setFont(new Font("Tahoma", Font.PLAIN, 19));
 		label.setBackground(Color.DARK_GRAY);
 		label.setBounds(0, 363, 196, 62);
 		contentPane.add(label);
@@ -534,12 +556,12 @@ public class Mains extends JFrame {
 		});
 		label_1.setOpaque(true);
 		label_1.setForeground(Color.WHITE);
-		label_1.setFont(new Font("SansSerif", Font.PLAIN, 19));
+		label_1.setFont(new Font("Tahoma", Font.PLAIN, 19));
 		label_1.setBackground(Color.DARK_GRAY);
 		label_1.setBounds(0, 426, 196, 62);
 		contentPane.add(label_1);
 
-		JLabel lblTransaction = new JLabel("     Transaction");
+		JLabel lblTransaction = new JLabel("     Transactions");
 		lblTransaction.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -574,7 +596,7 @@ public class Mains extends JFrame {
 		});
 		lblTransaction.setOpaque(true);
 		lblTransaction.setForeground(Color.WHITE);
-		lblTransaction.setFont(new Font("SansSerif", Font.PLAIN, 19));
+		lblTransaction.setFont(new Font("Tahoma", Font.PLAIN, 19));
 		lblTransaction.setBackground(Color.DARK_GRAY);
 		lblTransaction.setBounds(0, 489, 196, 62);
 		contentPane.add(lblTransaction);
@@ -615,7 +637,7 @@ public class Mains extends JFrame {
 		});
 		lblSettings.setOpaque(true);
 		lblSettings.setForeground(Color.WHITE);
-		lblSettings.setFont(new Font("SansSerif", Font.PLAIN, 19));
+		lblSettings.setFont(new Font("Tahoma", Font.PLAIN, 19));
 		lblSettings.setBackground(Color.DARK_GRAY);
 		lblSettings.setBounds(0, 552, 196, 62);
 		contentPane.add(lblSettings);

@@ -51,8 +51,6 @@ public class Addcompanyy extends JFrame {
 	private JTextField compgstdatetxt;
 	private JTextField comppannotxt;
 	private JTextField comppandatetxt;
-	private JTextField comptannotxt;
-	private JTextField comptandatetxt;
 	private JComboBox statecomboBox_2;
 	private JLabel compnamelbl;
 	private JComboBox gstcatcomboBox_1;
@@ -138,13 +136,10 @@ public class Addcompanyy extends JFrame {
 			String gst_date = compgstdatetxt.getText();
 			String pan =comppannotxt.getText();
 			String pan_date = comppandatetxt.getText();
-			String tan =comptannotxt.getText();
-			String tan_date = comptandatetxt.getText();
-			
-		
+	
 			 con=DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks","sa","");
 			 
-			 st = con.prepareStatement("insert into company values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+			 st = con.prepareStatement("insert into company values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 				
 				st.setString(1,tc );
 				st.setString(2,trade );
@@ -162,10 +157,7 @@ public class Addcompanyy extends JFrame {
 				st.setString(14,gstcat );
 				st.setString(15,pan );
 				st.setString(16,pan_date );
-				st.setString(17,tan );
-				st.setString(18,tan_date );
-				
-				
+		
 				st.execute();
 
 				/*
@@ -355,7 +347,7 @@ public class Addcompanyy extends JFrame {
 		
 		compestddatetxt = new JTextField();
 		compestddatetxt.setColumns(10);
-		compestddatetxt.setBounds(836, 294, 125, 26);
+		compestddatetxt.setBounds(836, 294, 159, 26);
 		contentPane.add(compestddatetxt);
 		
 		JLabel label_13 = new JLabel("GST Number");
@@ -365,7 +357,7 @@ public class Addcompanyy extends JFrame {
 		
 		compgstdatetxt = new JTextField();
 		compgstdatetxt.setColumns(10);
-		compgstdatetxt.setBounds(836, 353, 114, 26);
+		compgstdatetxt.setBounds(836, 353, 159, 26);
 		contentPane.add(compgstdatetxt);
 		
 		JLabel label_14 = new JLabel("GST Date");
@@ -385,7 +377,7 @@ public class Addcompanyy extends JFrame {
 		
 		comppannotxt = new JTextField();
 		comppannotxt.setColumns(10);
-		comppannotxt.setBounds(836, 413, 93, 26);
+		comppannotxt.setBounds(836, 413, 159, 26);
 		contentPane.add(comppannotxt);
 		
 		JLabel label_16 = new JLabel("PAN");
@@ -395,33 +387,13 @@ public class Addcompanyy extends JFrame {
 		
 		comppandatetxt = new JTextField();
 		comppandatetxt.setColumns(10);
-		comppandatetxt.setBounds(1042, 410, 93, 27);
+		comppandatetxt.setBounds(836, 455, 159, 27);
 		contentPane.add(comppandatetxt);
 		
 		JLabel label_17 = new JLabel("PAN Date");
 		label_17.setFont(new Font("SansSerif", Font.PLAIN, 15));
-		label_17.setBounds(957, 413, 86, 21);
+		label_17.setBounds(698, 452, 86, 21);
 		contentPane.add(label_17);
-		
-		comptannotxt = new JTextField();
-		comptannotxt.setColumns(10);
-		comptannotxt.setBounds(836, 446, 93, 27);
-		contentPane.add(comptannotxt);
-		
-		comptandatetxt = new JTextField();
-		comptandatetxt.setColumns(10);
-		comptandatetxt.setBounds(1042, 446, 93, 27);
-		contentPane.add(comptandatetxt);
-		
-		JLabel label_18 = new JLabel("TAN");
-		label_18.setFont(new Font("SansSerif", Font.PLAIN, 15));
-		label_18.setBounds(698, 444, 46, 29);
-		contentPane.add(label_18);
-		
-		JLabel label_19 = new JLabel("TAN Date");
-		label_19.setFont(new Font("SansSerif", Font.PLAIN, 15));
-		label_19.setBounds(957, 443, 86, 30);
-		contentPane.add(label_19);
 		
 		 statecomboBox_2 = new JComboBox();
 		statecomboBox_2.setBounds(391, 354, 273, 26);
@@ -435,7 +407,7 @@ public class Addcompanyy extends JFrame {
 		try {
 			MaskFormatter mask = new MaskFormatter("##?????####?#?A");
 			 compgstnotxt = new JFormattedTextField(mask);
-			compgstnotxt.setBounds(836, 324, 125, 26);
+			compgstnotxt.setBounds(836, 324, 159, 26);
 			contentPane.add(compgstnotxt);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
