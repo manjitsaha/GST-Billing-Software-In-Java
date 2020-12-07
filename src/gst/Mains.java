@@ -642,7 +642,7 @@ public class Mains extends JFrame {
 		lblSettings.setBounds(0, 552, 196, 62);
 		contentPane.add(lblSettings);
 
-		// turnoncapslock();
-		//populateCompNameInAuthuser();
+		turnoncapslock();
+		populateCompNameInAuthuser();
 	}
 }

@@ -114,22 +114,32 @@ public class PastTransaction extends JFrame {
 	
 	public void DisplayPastTrx() {
 		
-		try {
-			con =  DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GST/INVOICESsnacks","sa","");
-			String[] types = {"TABLE"};
-			DatabaseMetaData metadata = con.getMetaData();
-			ResultSet resultSet = metadata.getTables(null, null, "%", types);
-			
+		/*
+		 * try { con =
+		 * DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GST/INVOICESsnacks",
+		 * "sa",""); String[] types = {"TABLE"}; DatabaseMetaData metadata =
+		 * con.getMetaData(); ResultSet resultSet = metadata.getTables(null, null, "%",
+		 * types);
+		 * 
+		 * 
+		 * while (resultSet.next()) {
+		 * 
+		 * Vector row = new Vector(); row.addElement(resultSet.getString(3));
+		 * model.addRow(row); }
+		 * 
+		 * 
+		 * } catch (SQLException e) { // TODO Auto-generated catch block
+		 * e.printStackTrace(); }
+		 */
 		
-			    while (resultSet.next()) 
-			    {
-			    	
-			        Vector row = new Vector();
-			        row.addElement(resultSet.getString(3));
-			        model.addRow(row);
-			    }
-
-			 
+        String sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'PUBLIC'";
+		
+		try {
+			Connection con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GST/INVOICESsnacks", "sa", "");
+			PreparedStatement ps = con.prepareStatement(sql);
+			ResultSet rs = ps.executeQuery();
+			table.setModel(net.proteanit.sql.DbUtils.resultSetToTableModel(rs));
+		//	System.out.println(rs);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -578,6 +588,8 @@ public class PastTransaction extends JFrame {
 	private JLabel duelbl;
 	private JPanel panel;
 	private JPanel panel_1;
+	private JTextField searchTF;
+	private JLabel lblNewLabel;
 	public void copyItemName() {
 		
 		mt = (DefaultTableModel)table_1.getModel();
@@ -744,7 +756,22 @@ public class PastTransaction extends JFrame {
 		    
 		  
 		}
-	
+
+	 public void searchItem() {
+
+		 String sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'PUBLIC' AND TABLE_NAME LIKE '%"+searchTF.getText()+"%'";
+			
+			try {
+				Connection con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GST/INVOICESsnacks", "sa", "");
+				PreparedStatement ps = con.prepareStatement(sql);
+				ResultSet rs = ps.executeQuery();
+				table.setModel(net.proteanit.sql.DbUtils.resultSetToTableModel(rs));
+			//	System.out.println(rs);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	
 	public PastTransaction() {
 		
@@ -758,13 +785,8 @@ public class PastTransaction extends JFrame {
 		contentPane.setLayout(null);
 		
 	
-		Vector columnNames = new Vector();
-		columnNames.addElement("Invoices");
-		
-		
-		
-
-		 model = new DefaultTableModel(columnNames, 0);
+		String[] columns = {"Invoices"};
+		 model = new DefaultTableModel();
 			   
 		  table = new JTable(model  );
 		  table.addKeyListener(new KeyAdapter() {
@@ -786,6 +808,8 @@ public class PastTransaction extends JFrame {
 					
 		    	}
 		    });
+		    table.setModel(model);
+		    model.setColumnIdentifiers(columns);
 			scrollPane = new JScrollPane( table );
 			scrollPane.setBounds(596, 91, 559, 297);
 			contentPane.add( scrollPane );
@@ -828,6 +852,7 @@ public class PastTransaction extends JFrame {
 				}
 			});
 			table_1.setModel(modtab);
+			modtab.setColumnIdentifiers(column);
 			scrollPane_1.setViewportView(table_1);
 			
 			JLabel lblItemName = new JLabel("Item Name");
@@ -1118,7 +1143,27 @@ public class PastTransaction extends JFrame {
 			panel_1.setBackground(Color.GRAY);
 			panel_1.setBounds(1185, 0, 198, 760);
 			contentPane.add(panel_1);
-			modtab.setColumnIdentifiers(column);
+			
+			searchTF = new JTextField();
+			searchTF.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					searchItem();
+					if(searchTF.getText() == "") {
+						DisplayPastTrx();
+					}
+				}
+			});
+			searchTF.setFont(new Font("Tahoma", Font.PLAIN, 13));
+			searchTF.setColumns(10);
+			searchTF.setBounds(656, 56, 273, 25);
+			contentPane.add(searchTF);
+			
+			lblNewLabel = new JLabel("Search");
+			lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			lblNewLabel.setBounds(596, 56, 75, 25);
+			contentPane.add(lblNewLabel);
+			
 			
 			
 	

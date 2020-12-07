@@ -444,6 +444,10 @@ public class Invoice extends JFrame implements Runnable {
 		custmob.setText(" ");
 		namecombo.setSelectedIndex(0);
 		namecombo.requestFocus();
+		
+		itemcombo.setSelectedIndex(0);
+		paidtxt.setText("0");
+		duetxt.setText("0");	
 	}
 
 	public void IncreasingBillNo() {
@@ -495,7 +499,7 @@ public class Invoice extends JFrame implements Runnable {
 	public void addingTotalAmount() {
 		float totalprice = 0;
 		for (int i = 0; i < table.getRowCount(); i++) {
-			float totalamount = Float.parseFloat(table.getValueAt(i, 6).toString());
+			float totalamount = Float.parseFloat(table.getValueAt(i, 5).toString());
 			totalprice += totalamount;
 		}
 		String d = String.format("%.2f", totalprice);
@@ -504,6 +508,7 @@ public class Invoice extends JFrame implements Runnable {
 
 	public void deletingRow() {
 		int i = table.getSelectedRow();
+
 		if (i >= 0) {
 			model_table.removeRow(i);
 		}
@@ -511,7 +516,7 @@ public class Invoice extends JFrame implements Runnable {
 		float total = 0;
 		for (int i1 = 0; i1 < table.getRowCount(); i1++) {
 
-			float amount = Float.parseFloat((String) table.getValueAt(i1, 9));
+			float amount = Float.parseFloat((String) table.getValueAt(i1, 8));
 			total += amount;
 		}
 		String to = String.format("%.2f", total);
@@ -529,17 +534,25 @@ public class Invoice extends JFrame implements Runnable {
 	}
 
 	public void StockUpdate() {
-		String fp = stocktext.getText();
+
+		// String fp = stocktext.getText();
 		try {
 			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
-			String stock = itemcombo.getSelectedItem().toString();
-			PreparedStatement us = con
-					.prepareStatement("update additems set stock = '" + fp + "'where item_name ='" + stock + "'");
+			// String stock = itemcombo.getSelectedItem().toString();
 
-			us.execute();
+			for (int i = 0; i < table.getRowCount(); i++) {
 
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+				String itemName = (String) table.getValueAt(i, 1);
+				int qty = Integer.parseInt((String) table.getValueAt(i, 4));
+				String sql = "UPDATE ADDITEMS SET STOCK = STOCK - '" + qty + "' WHERE ITEM_NAME = '" + itemName + "'";
+
+				PreparedStatement us = con.prepareStatement(sql);
+
+				us.execute();
+
+			}
+
+		} catch (SQLException e) { // TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -606,7 +619,7 @@ public class Invoice extends JFrame implements Runnable {
 		String pd = paidtxt.getText();
 		String tot = grandtotallabel.getText();
 		if (pd.isEmpty()) {
-			paidtxt.setText("0");
+			paidtxt.setText("0.0");
 		} else {
 
 			float a = Float.parseFloat(pd);
@@ -614,6 +627,7 @@ public class Invoice extends JFrame implements Runnable {
 			float c = b - a;
 
 			String d = String.format("%.2f", c);
+
 			duetxt.setText(d);
 
 		}
@@ -670,9 +684,9 @@ public class Invoice extends JFrame implements Runnable {
 	public void minnusdiscamtondel() {
 
 		DefaultTableModel mt = (DefaultTableModel) table.getModel();
-		String disc = mt.getValueAt(table.getSelectedRow(), 8).toString();
+		String disc = mt.getValueAt(table.getSelectedRow(), 7).toString();
 		float di = Float.parseFloat(disc);
-		String price = mt.getValueAt(table.getSelectedRow(), 6).toString();
+		String price = mt.getValueAt(table.getSelectedRow(), 5).toString();
 		float pr = Float.parseFloat(price);
 		float per = pr * di / 100;
 
@@ -747,9 +761,9 @@ public class Invoice extends JFrame implements Runnable {
 	public void decreasebelowtax() {
 		DefaultTableModel mt = (DefaultTableModel) table.getModel();
 
-		String gt = mt.getValueAt(table.getSelectedRow(), 7).toString();
+		String gt = mt.getValueAt(table.getSelectedRow(), 6).toString();
 		float t = Float.parseFloat(gt);
-		String g = mt.getValueAt(table.getSelectedRow(), 6).toString();
+		String g = mt.getValueAt(table.getSelectedRow(), 5).toString();
 		float gp = Float.parseFloat(g);
 		float gg = gp * t / 100;
 		float tot = gg / 2;
@@ -877,20 +891,19 @@ public class Invoice extends JFrame implements Runnable {
 			JasperPrint jp = JasperFillManager.fillReport(jr, param, con);
 			JasperViewer jv = new JasperViewer(jp, false);
 			jv.setVisible(true);
+			
+			
+			System.out.println("success print");
+			setAllFieldToZero();		
+			IncreasingBillNo();
 
 		} catch (SQLException | JRException | ClassNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
-		System.out.println("success print");
-		setAllFieldToZero();
-		itemcombo.setSelectedIndex(0);
-		paidtxt.setText("0");
-		duetxt.setText("0");
 		op.deleteTempInv();
 		op.createTempTable();
-		IncreasingBillNo();
 
 	}
 
@@ -1077,7 +1090,7 @@ public class Invoice extends JFrame implements Runnable {
 		contentPane.add(scrollPane);
 
 		table = new JTable();
-		table.setFont(new Font("Tahoma" , Font.PLAIN , 16));
+		table.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		table.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -1093,24 +1106,36 @@ public class Invoice extends JFrame implements Runnable {
 		scrollPane.setViewportView(table);
 		table.setModel(model_table);
 
-		Object column_names[] = { "Batch", "Item Name", "Mfg", "Sac/Hsn", "Qty", "Price", "Tax(%)",
-				"Discount(%)", "Total" };
+		Object column_names[] = { "Batch", "Item Name", "Mfg", "Sac/Hsn", "Qty", "Price", "Tax(%)", "Discount(%)",
+				"Total" };
 
 		model_table.setColumnIdentifiers(column_names);
 
 		final JButton btnPrint = new JButton("Print");
 		btnPrint.setMnemonic('p');
+		btnPrint.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				printInvoice();
+				StockUpdate();
+
+			}
+		});
 		btnPrint.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					printInvoice();
+					StockUpdate();
 
 				}
 			}
 		});
 		
+
 		btnPrint.setBounds(1035, 674, 89, 23);
 		contentPane.add(btnPrint);
 
@@ -1301,7 +1326,7 @@ public class Invoice extends JFrame implements Runnable {
 				countitem();
 				addingTotalAmountWithTax();
 				addingTotalAmount();
-				StockUpdate();
+
 			}
 		});
 		btnAdd.setOpaque(false);
@@ -1363,7 +1388,7 @@ public class Invoice extends JFrame implements Runnable {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					setDue();
+					setDue();					
 					btnPrint.requestFocus();
 				}
 			}
