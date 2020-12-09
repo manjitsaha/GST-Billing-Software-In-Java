@@ -1,22 +1,20 @@
 package gst;
 
-import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-
-import java.awt.Color;
-import java.awt.CardLayout;
-import javax.swing.JInternalFrame;
-import java.awt.Canvas;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.border.EmptyBorder;
 
 public class Reports extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTable table;
 
@@ -41,7 +39,7 @@ public class Reports extends JFrame {
 	 */
 	public Reports() {
 		setUndecorated(true);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setSize(1383,760);
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(240, 230, 140));

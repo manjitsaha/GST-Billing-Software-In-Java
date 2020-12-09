@@ -3,6 +3,11 @@ package gst;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,19 +18,13 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import java.awt.event.KeyAdapter;
 
 public class Stockm extends JFrame {
 
@@ -65,7 +64,7 @@ public class Stockm extends JFrame {
 
 	public void stock() {
 		try {
-			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 			String stk = "SELECT ITEM_NAME , STOCK FROM ADDITEMS";
 			st = con.prepareStatement(stk);
 			rs = st.executeQuery();
@@ -74,7 +73,7 @@ public class Stockm extends JFrame {
 			table.setModel(net.proteanit.sql.DbUtils.resultSetToTableModel(rs));
 			// }
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 
 		}
@@ -84,6 +83,11 @@ public class Stockm extends JFrame {
 
 		KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
 		Action escapeAction = new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 			}
@@ -97,13 +101,13 @@ public class Stockm extends JFrame {
 		String sql = "SELECT item_name , stock FROM ADDITEMS WHERE item_name LIKE '%"+searchTF.getText()+"%' ";
 		
 		try {
-			Connection con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+			Connection con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 			PreparedStatement ps = con.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
 			table.setModel(net.proteanit.sql.DbUtils.resultSetToTableModel(rs));
 		//	System.out.println(rs);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 	}
@@ -129,7 +133,9 @@ public class Stockm extends JFrame {
 		contentPane.add(scrollPane);
 
 		table = new JTable();
-		table.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		table.setFont(new Font("Tahoma" , Font.PLAIN , 15));
+		table.setRowMargin(9);
+		table.setRowHeight(30);
 		scrollPane.setViewportView(table);
 
 		panel = new JPanel();

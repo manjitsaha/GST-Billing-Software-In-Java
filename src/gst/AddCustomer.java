@@ -10,6 +10,9 @@ import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -32,27 +35,29 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
+import java.awt.event.KeyAdapter;
 
 public class AddCustomer extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JTextField textField_4;
-	private JTextField textField_5;
-	private JTextField textField_6;
-	private JTextField textField_7;
-	private JTextField textField_8;
-	private JTextField textField_11;
-	private JTextField textField_9;
-	private JTextField textField_10;
-	private JTextField textField_12;
-	private JTextField textField_3;
-	private JComboBox<String> comboBox;
-	private JComboBox<String> comboBox_1;
-	private JFormattedTextField formattedTextField;
-	private JFormattedTextField formattedTextField_1;
+	private JTextField ledgerNameTF;
+	private JTextField placeTF;
+	private JTextField emailTF;
+	private JTextField add2TF;
+	private JTextField pinTF;
+	private JTextField websiteTF;
+	private JTextField mobileTF;
+	private JTextField altMobileTF;
+	private JTextField panDateTF;
+	private JTextField faxTF;
+	private JTextField phoneTF;
+	private JTextField countryTF;
+	private JTextField add1TF;
+	private JComboBox<String> stateComboBox;
+	private JComboBox<String> ledgerCatComboBox;
+	private JFormattedTextField gstTF;
+	private JFormattedTextField panNoTF;
+	private JButton btnSave;
 
 	/**
 	 * Launch the application.
@@ -84,11 +89,11 @@ public class AddCustomer extends JFrame {
 	public void populateState() {
 		String sta = "select * from states";
 		try {
-			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 			ps = con.createStatement();
 			rs = ps.executeQuery(sta);
 			while (rs.next()) {
-				comboBox.addItem(rs.getString("states"));
+				stateComboBox.addItem(rs.getString("states"));
 			}
 
 		} catch (SQLException e) {
@@ -99,26 +104,26 @@ public class AddCustomer extends JFrame {
 	}
 
 	public void savingCustomerDetail() {
-		String ledname = textField.getText();
-		String place = textField_1.getText();
-		String states = comboBox.getSelectedItem().toString();
-		String em = textField_2.getText();
-		String add1 = textField_3.getText();
-		String add2 = textField_4.getText();
-		String pin = textField_5.getText();
-		String webs = textField_6.getText();
-		String mobno = textField_7.getText().replaceAll(" ", "");
-		String altmob = textField_8.getText();
-		String fax = textField_9.getText();
-		String phone = textField_10.getText();
-		String gst = formattedTextField.getText();
-		String pan = formattedTextField_1.getText();
-		String pandate = textField_11.getText();
-		String ledcat = comboBox_1.getSelectedItem().toString();
-		String country = textField_12.getText();
+		String ledname = ledgerNameTF.getText();
+		String place = placeTF.getText();
+		String states = stateComboBox.getSelectedItem().toString();
+		String em = emailTF.getText();
+		String add1 = add1TF.getText();
+		String add2 = add2TF.getText();
+		String pin = pinTF.getText();
+		String webs = websiteTF.getText();
+		String mobno = mobileTF.getText().replaceAll(" ", "");
+		String altmob = altMobileTF.getText();
+		String fax = faxTF.getText();
+		String phone = phoneTF.getText();
+		String gst = gstTF.getText();
+		String pan = panNoTF.getText();
+		String pandate = panDateTF.getText();
+		String ledcat = ledgerCatComboBox.getSelectedItem().toString();
+		String country = countryTF.getText();
 
 		try {
-			Connection con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+			Connection con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 			PreparedStatement ps = con
 					.prepareStatement("insert into customers values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 			ps.setString(1, ledname);
@@ -147,20 +152,25 @@ public class AddCustomer extends JFrame {
 		}
 	}
 
-	public void resettingFields() {
-		textField.setText("");
-		textField_1.setText("");
-		textField_2.setText("");
-		textField_3.setText("");
-		textField_4.setText("");
-		textField_5.setText("");
-		textField_6.setText("");
-		textField_7.setText("");
-		textField_8.setText("");
-		textField_9.setText("");
-		textField_10.setText("");
-		textField_11.setText("");
-		textField_12.setText("");
+	public void resetFields() {
+		
+		ledgerNameTF.setText("");
+		stateComboBox.setSelectedIndex(0);
+		placeTF.setText("");
+		emailTF.setText("");
+		add1TF.setText("");
+		add2TF.setText("");
+		pinTF.setText("");
+		websiteTF.setText("");
+		mobileTF.setText("");
+		altMobileTF.setText("");
+		faxTF.setText("");
+		phoneTF.setText("");
+		gstTF.setText("");
+		panNoTF.setText("");
+		panDateTF.setText("");
+		ledgerCatComboBox.setSelectedIndex(0);
+		
 	}
 
 	public void closeFrame() {
@@ -193,41 +203,55 @@ public class AddCustomer extends JFrame {
 		lblLedgerName.setBounds(298, 104, 150, 27);
 		contentPane.add(lblLedgerName);
 
-		textField = new JTextField();
-		textField.setOpaque(false);
-		textField.addFocusListener(new FocusAdapter() {
+		ledgerNameTF = new JTextField();
+		ledgerNameTF.transferFocusDownCycle();
+		ledgerNameTF.setOpaque(false);
+		ledgerNameTF.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(stateComboBox, e);
+			}
+		});
+		ledgerNameTF.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
 
-				if (textField.hasFocus()) {
-					textField.setOpaque(true);
-					textField.setForeground(new Color(255, 255, 255));
-					textField.setBackground(Color.black);
+				if (ledgerNameTF.hasFocus()) {
+					ledgerNameTF.setOpaque(true);
+					ledgerNameTF.setForeground(new Color(255, 255, 255));
+					ledgerNameTF.setBackground(Color.black);
 				}
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				textField.setForeground(Color.black);
-				textField.setBackground(new Color(240, 230, 140));
+				ledgerNameTF.setForeground(Color.black);
+				ledgerNameTF.setBackground(new Color(240, 230, 140));
 			}
 		});
 
-		textField.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		textField.setBorder(null);
-		textField.setBounds(447, 106, 282, 27);
-		contentPane.add(textField);
-		textField.setColumns(10);
+		ledgerNameTF.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		ledgerNameTF.setBorder(null);
+		ledgerNameTF.setBounds(447, 106, 282, 27);
+		contentPane.add(ledgerNameTF);
+		ledgerNameTF.setColumns(10);
 
 		JLabel lblState = new JLabel("State                    :");
 		lblState.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblState.setBounds(298, 142, 150, 27);
 		contentPane.add(lblState);
 
-		comboBox = new JComboBox();
-		comboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		comboBox.setBounds(447, 144, 282, 27);
-		contentPane.add(comboBox);
+		stateComboBox = new JComboBox();
+		stateComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		stateComboBox.setBounds(447, 144, 282, 27);
+		stateComboBox.transferFocusUpCycle();
+		stateComboBox.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(placeTF, e);
+			}
+		});
+		contentPane.add(stateComboBox);
 
 		JLabel lblEmailId = new JLabel("Email ID                :");
 		lblEmailId.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -244,140 +268,170 @@ public class AddCustomer extends JFrame {
 		lblAddress.setBounds(298, 254, 150, 25);
 		contentPane.add(lblAddress);
 
-		textField_1 = new JTextField();
-		textField_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		textField_1.setOpaque(false);
-		textField_1.addFocusListener(new FocusAdapter() {
+		placeTF = new JTextField();
+		placeTF.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		placeTF.setOpaque(false);
+		placeTF.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(emailTF, e);
+			}
+		});
+		placeTF.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				textField_1.setOpaque(false);
-				if (textField_1.hasFocus()) {
-					textField_1.setOpaque(true);
-					textField_1.setForeground(new Color(255, 255, 255));
-					textField_1.setBackground(Color.black);
+				placeTF.setOpaque(false);
+				if (placeTF.hasFocus()) {
+					placeTF.setOpaque(true);
+					placeTF.setForeground(new Color(255, 255, 255));
+					placeTF.setBackground(Color.black);
 				}
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				textField_1.setForeground(Color.black);
-				textField_1.setBackground(new Color(240, 230, 140));
+				placeTF.setForeground(Color.black);
+				placeTF.setBackground(new Color(240, 230, 140));
 			}
 		});
-		textField_1.setBorder(null);
-		textField_1.setColumns(10);
-		textField_1.setBounds(447, 180, 282, 27);
-		contentPane.add(textField_1);
+		placeTF.setBorder(null);
+		placeTF.setColumns(10);
+		placeTF.setBounds(447, 180, 282, 27);
+		contentPane.add(placeTF);
 
-		textField_2 = new JTextField();
-		textField_2.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		textField_2.setOpaque(false);
-		textField_2.addFocusListener(new FocusAdapter() {
+		emailTF = new JTextField();
+		emailTF.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		emailTF.setOpaque(false);
+		emailTF.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(add1TF, e);
+			}
+		});
+		emailTF.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				textField_2.setOpaque(false);
-				if (textField_2.hasFocus()) {
-					textField_2.setOpaque(true);
-					textField_2.setForeground(new Color(255, 255, 255));
-					textField_2.setBackground(Color.black);
+				emailTF.setOpaque(false);
+				if (emailTF.hasFocus()) {
+					emailTF.setOpaque(true);
+					emailTF.setForeground(new Color(255, 255, 255));
+					emailTF.setBackground(Color.black);
 				}
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				textField_2.setForeground(Color.black);
-				textField_2.setBackground(new Color(240, 230, 140));
+				emailTF.setForeground(Color.black);
+				emailTF.setBackground(new Color(240, 230, 140));
 			}
 		});
-		textField_2.setBorder(null);
-		textField_2.setColumns(10);
-		textField_2.setBounds(447, 218, 282, 27);
-		contentPane.add(textField_2);
+		emailTF.setBorder(null);
+		emailTF.setColumns(10);
+		emailTF.setBounds(447, 218, 282, 27);
+		contentPane.add(emailTF);
 
 		JLabel lblAddress_1 = new JLabel("Address 2              :");
 		lblAddress_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblAddress_1.setBounds(298, 290, 150, 25);
 		contentPane.add(lblAddress_1);
 
-		textField_4 = new JTextField();
-		textField_4.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		textField_4.setOpaque(false);
-		textField_4.addFocusListener(new FocusAdapter() {
+		add2TF = new JTextField();
+		add2TF.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		add2TF.setOpaque(false);
+		add2TF.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(pinTF, e);
+			}
+		});
+		add2TF.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				textField_4.setOpaque(false);
-				if (textField_4.hasFocus()) {
-					textField_4.setOpaque(true);
-					textField_4.setForeground(new Color(255, 255, 255));
-					textField_4.setBackground(Color.black);
+				add2TF.setOpaque(false);
+				if (add2TF.hasFocus()) {
+					add2TF.setOpaque(true);
+					add2TF.setForeground(new Color(255, 255, 255));
+					add2TF.setBackground(Color.black);
 				}
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				textField_4.setForeground(Color.black);
-				textField_4.setBackground(new Color(240, 230, 140));
+				add2TF.setForeground(Color.black);
+				add2TF.setBackground(new Color(240, 230, 140));
 			}
 		});
-		textField_4.setBorder(null);
-		textField_4.setColumns(10);
-		textField_4.setBounds(447, 290, 282, 27);
-		contentPane.add(textField_4);
+		add2TF.setBorder(null);
+		add2TF.setColumns(10);
+		add2TF.setBounds(447, 290, 282, 27);
+		contentPane.add(add2TF);
 
 		JLabel lblPin = new JLabel("Pin                       :");
 		lblPin.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblPin.setBounds(298, 326, 150, 25);
 		contentPane.add(lblPin);
 
-		textField_5 = new JTextField();
-		textField_5.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		textField_5.setOpaque(false);
-		textField_5.addFocusListener(new FocusAdapter() {
+		pinTF = new JTextField();
+		pinTF.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		pinTF.setOpaque(false);
+		pinTF.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(websiteTF, e);
+			}
+		});
+		pinTF.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				textField_5.setOpaque(false);
-				if (textField_5.hasFocus()) {
-					textField_5.setOpaque(true);
-					textField_5.setForeground(new Color(255, 255, 255));
-					textField_5.setBackground(Color.black);
+				pinTF.setOpaque(false);
+				if (pinTF.hasFocus()) {
+					pinTF.setOpaque(true);
+					pinTF.setForeground(new Color(255, 255, 255));
+					pinTF.setBackground(Color.black);
 				}
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				textField_5.setForeground(Color.black);
-				textField_5.setBackground(new Color(240, 230, 140));
+				pinTF.setForeground(Color.black);
+				pinTF.setBackground(new Color(240, 230, 140));
 			}
 		});
-		textField_5.setBorder(null);
-		textField_5.setColumns(10);
-		textField_5.setBounds(447, 326, 282, 27);
-		contentPane.add(textField_5);
+		pinTF.setBorder(null);
+		pinTF.setColumns(10);
+		pinTF.setBounds(447, 326, 282, 27);
+		contentPane.add(pinTF);
 
-		textField_6 = new JTextField();
-		textField_6.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		textField_6.setOpaque(false);
-		textField_6.addFocusListener(new FocusAdapter() {
+		websiteTF = new JTextField();
+		websiteTF.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		websiteTF.setOpaque(false);
+		websiteTF.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(mobileTF, e);
+			}
+		});
+		websiteTF.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				textField_6.setOpaque(false);
-				if (textField_6.hasFocus()) {
-					textField_6.setOpaque(true);
-					textField_6.setForeground(new Color(255, 255, 255));
-					textField_6.setBackground(Color.black);
+				websiteTF.setOpaque(false);
+				if (websiteTF.hasFocus()) {
+					websiteTF.setOpaque(true);
+					websiteTF.setForeground(new Color(255, 255, 255));
+					websiteTF.setBackground(Color.black);
 				}
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				textField_6.setForeground(Color.black);
-				textField_6.setBackground(new Color(240, 230, 140));
+				websiteTF.setForeground(Color.black);
+				websiteTF.setBackground(new Color(240, 230, 140));
 			}
 		});
-		textField_6.setBorder(null);
-		textField_6.setColumns(10);
-		textField_6.setBounds(447, 364, 282, 27);
-		contentPane.add(textField_6);
+		websiteTF.setBorder(null);
+		websiteTF.setColumns(10);
+		websiteTF.setBounds(447, 364, 282, 27);
+		contentPane.add(websiteTF);
 
 		JLabel lblWebsite = new JLabel("Website                :");
 		lblWebsite.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -394,92 +448,112 @@ public class AddCustomer extends JFrame {
 		lblAlternateMobNo.setBounds(298, 440, 150, 25);
 		contentPane.add(lblAlternateMobNo);
 
-		textField_7 = new JTextField();
-		textField_7.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		textField_7.setOpaque(false);
-		textField_7.addFocusListener(new FocusAdapter() {
+		mobileTF = new JTextField();
+		mobileTF.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		mobileTF.setOpaque(false);
+		mobileTF.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(faxTF, e);
+			}
+		});
+		mobileTF.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				textField_7.setOpaque(false);
-				if (textField_7.hasFocus()) {
-					textField_7.setOpaque(true);
-					textField_7.setForeground(new Color(255, 255, 255));
-					textField_7.setBackground(Color.black);
+				mobileTF.setOpaque(false);
+				if (mobileTF.hasFocus()) {
+					mobileTF.setOpaque(true);
+					mobileTF.setForeground(new Color(255, 255, 255));
+					mobileTF.setBackground(Color.black);
 				}
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				textField_7.setForeground(Color.black);
-				textField_7.setBackground(new Color(240, 230, 140));
+				mobileTF.setForeground(Color.black);
+				mobileTF.setBackground(new Color(240, 230, 140));
 			}
 		});
-		textField_7.setBorder(null);
-		textField_7.setColumns(10);
-		textField_7.setBounds(447, 402, 282, 27);
-		contentPane.add(textField_7);
+		mobileTF.setBorder(null);
+		mobileTF.setColumns(10);
+		mobileTF.setBounds(447, 402, 282, 27);
+		contentPane.add(mobileTF);
 
-		textField_8 = new JTextField();
-		textField_8.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		textField_8.setOpaque(false);
-		textField_8.addFocusListener(new FocusAdapter() {
+		altMobileTF = new JTextField();
+		altMobileTF.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		altMobileTF.setOpaque(false);
+		altMobileTF.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(phoneTF, e);
+			}
+		});
+		altMobileTF.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				textField_8.setOpaque(false);
-				if (textField_8.hasFocus()) {
-					textField_8.setOpaque(true);
-					textField_8.setForeground(new Color(255, 255, 255));
-					textField_8.setBackground(Color.black);
+				altMobileTF.setOpaque(false);
+				if (altMobileTF.hasFocus()) {
+					altMobileTF.setOpaque(true);
+					altMobileTF.setForeground(new Color(255, 255, 255));
+					altMobileTF.setBackground(Color.black);
 				}
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				textField_8.setForeground(Color.black);
-				textField_8.setBackground(new Color(240, 230, 140));
+				altMobileTF.setForeground(Color.black);
+				altMobileTF.setBackground(new Color(240, 230, 140));
 			}
 		});
-		textField_8.setBorder(null);
-		textField_8.setColumns(10);
-		textField_8.setBounds(447, 440, 282, 27);
-		contentPane.add(textField_8);
+		altMobileTF.setBorder(null);
+		altMobileTF.setColumns(10);
+		altMobileTF.setBounds(447, 440, 282, 27);
+		contentPane.add(altMobileTF);
 
 		JLabel lblGstNo = new JLabel("GST No.                :");
 		lblGstNo.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblGstNo.setBounds(298, 476, 150, 25);
 		contentPane.add(lblGstNo);
 
-		MaskFormatter mask;
+		
 		try {
-			mask = new MaskFormatter("##?????####?#?A");
-			formattedTextField = new JFormattedTextField(mask);
-			formattedTextField.setFont(new Font("Tahoma", Font.PLAIN, 15));
-			formattedTextField.setOpaque(false);
+			MaskFormatter mask = new MaskFormatter("##?????####?#?A");
+			gstTF = new JFormattedTextField(mask);			
 		} catch (ParseException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
-		formattedTextField.addFocusListener(new FocusAdapter() {
+		
+		gstTF.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		gstTF.setOpaque(false);
+		gstTF.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(panNoTF, e);
+			}
+		});
+		
+		gstTF.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				formattedTextField.setOpaque(false);
-				if (formattedTextField.hasFocus()) {
-					formattedTextField.setOpaque(true);
-					formattedTextField.setForeground(new Color(255, 255, 255));
-					formattedTextField.setBackground(Color.black);
+				gstTF.setOpaque(false);
+				if (gstTF.hasFocus()) {
+					gstTF.setOpaque(true);
+					gstTF.setForeground(new Color(255, 255, 255));
+					gstTF.setBackground(Color.black);
 				}
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				formattedTextField.setForeground(Color.black);
-				formattedTextField.setBackground(new Color(240, 230, 140));
+				gstTF.setForeground(Color.black);
+				gstTF.setBackground(new Color(240, 230, 140));
 			}
 		});
-		formattedTextField.setBorder(null);
-		formattedTextField.setBounds(447, 476, 282, 25);
-		contentPane.add(formattedTextField);
+		gstTF.setBorder(null);
+		gstTF.setBounds(447, 476, 282, 25);
+		contentPane.add(gstTF);
 
 		JLabel lblPan = new JLabel("PAN                      :");
 		lblPan.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -491,30 +565,36 @@ public class AddCustomer extends JFrame {
 		lblPanDate.setBounds(786, 512, 85, 25);
 		contentPane.add(lblPanDate);
 
-		textField_11 = new JTextField();
-		textField_11.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		textField_11.setOpaque(false);
-		textField_11.addFocusListener(new FocusAdapter() {
+		panDateTF = new JTextField();
+		panDateTF.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		panDateTF.setOpaque(false);
+		panDateTF.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(ledgerCatComboBox, e);
+			}
+		});
+		panDateTF.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				textField_11.setOpaque(false);
-				if (textField_11.hasFocus()) {
-					textField_11.setOpaque(true);
-					textField_11.setForeground(new Color(255, 255, 255));
-					textField_11.setBackground(Color.black);
+				panDateTF.setOpaque(false);
+				if (panDateTF.hasFocus()) {
+					panDateTF.setOpaque(true);
+					panDateTF.setForeground(new Color(255, 255, 255));
+					panDateTF.setBackground(Color.black);
 				}
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				textField_11.setForeground(Color.black);
-				textField_11.setBackground(new Color(240, 230, 140));
+				panDateTF.setForeground(Color.black);
+				panDateTF.setBackground(new Color(240, 230, 140));
 			}
 		});
-		textField_11.setBorder(null);
-		textField_11.setColumns(10);
-		textField_11.setBounds(881, 511, 141, 27);
-		contentPane.add(textField_11);
+		panDateTF.setBorder(null);
+		panDateTF.setColumns(10);
+		panDateTF.setBounds(881, 511, 141, 27);
+		contentPane.add(panDateTF);
 
 		JLabel lblLedgerCategory = new JLabel("Ledger Category      :");
 		lblLedgerCategory.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -522,171 +602,212 @@ public class AddCustomer extends JFrame {
 		contentPane.add(lblLedgerCategory);
 
 		String ledcat[] = { "OTHERS", "RETAILERS", "STOCKIST", "DISTRIBUTORS" };
-		comboBox_1 = new JComboBox(ledcat);
-		comboBox_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		comboBox_1.setBounds(447, 551, 141, 22);
-		contentPane.add(comboBox_1);
+		ledgerCatComboBox = new JComboBox(ledcat);
+		ledgerCatComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		ledgerCatComboBox.setBounds(447, 551, 141, 22);
+		ledgerCatComboBox.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(countryTF, e);
+			}
+		});
+		contentPane.add(ledgerCatComboBox);
 
 		JLabel lblFaxNo = new JLabel("Fax No.    :");
 		lblFaxNo.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblFaxNo.setBounds(786, 404, 85, 25);
 		contentPane.add(lblFaxNo);
 
-		textField_9 = new JTextField();
-		textField_9.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		textField_9.setOpaque(false);
-		textField_9.addFocusListener(new FocusAdapter() {
+		faxTF = new JTextField();
+		faxTF.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		faxTF.setOpaque(false);
+		faxTF.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(altMobileTF, e);
+			}
+		});
+		faxTF.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				textField_9.setOpaque(false);
-				if (textField_9.hasFocus()) {
-					textField_9.setOpaque(true);
-					textField_9.setForeground(new Color(255, 255, 255));
-					textField_9.setBackground(Color.black);
+				faxTF.setOpaque(false);
+				if (faxTF.hasFocus()) {
+					faxTF.setOpaque(true);
+					faxTF.setForeground(new Color(255, 255, 255));
+					faxTF.setBackground(Color.black);
 				}
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				textField_9.setForeground(Color.black);
-				textField_9.setBackground(new Color(240, 230, 140));
+				faxTF.setForeground(Color.black);
+				faxTF.setBackground(new Color(240, 230, 140));
 			}
 		});
-		textField_9.setBorder(null);
-		textField_9.setColumns(10);
-		textField_9.setBounds(881, 403, 141, 27);
-		contentPane.add(textField_9);
+		faxTF.setBorder(null);
+		faxTF.setColumns(10);
+		faxTF.setBounds(881, 403, 141, 27);
+		contentPane.add(faxTF);
 
 		JLabel lblPhoneNo = new JLabel("Phone No. :");
 		lblPhoneNo.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblPhoneNo.setBounds(786, 440, 85, 25);
 		contentPane.add(lblPhoneNo);
 
-		textField_10 = new JTextField();
-		textField_10.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		textField_10.setOpaque(false);
-		textField_10.addFocusListener(new FocusAdapter() {
+		phoneTF = new JTextField();
+		phoneTF.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		phoneTF.setOpaque(false);
+		phoneTF.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(gstTF, e);
+			}
+		});
+		phoneTF.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				textField_10.setOpaque(false);
-				if (textField_10.hasFocus()) {
-					textField_10.setOpaque(true);
-					textField_10.setForeground(new Color(255, 255, 255));
-					textField_10.setBackground(Color.black);
+				phoneTF.setOpaque(false);
+				if (phoneTF.hasFocus()) {
+					phoneTF.setOpaque(true);
+					phoneTF.setForeground(new Color(255, 255, 255));
+					phoneTF.setBackground(Color.black);
 				}
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				textField_10.setForeground(Color.black);
-				textField_10.setBackground(new Color(240, 230, 140));
+				phoneTF.setForeground(Color.black);
+				phoneTF.setBackground(new Color(240, 230, 140));
 			}
 		});
-		textField_10.setBorder(null);
-		textField_10.setColumns(10);
-		textField_10.setBounds(881, 439, 141, 27);
-		contentPane.add(textField_10);
+		phoneTF.setBorder(null);
+		phoneTF.setColumns(10);
+		phoneTF.setBounds(881, 439, 141, 27);
+		contentPane.add(phoneTF);
 
 		JLabel lblCountry = new JLabel("Country                 :");
 		lblCountry.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblCountry.setBounds(298, 586, 150, 25);
 		contentPane.add(lblCountry);
 
-		textField_12 = new JTextField();
-		textField_12.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		textField_12.setColumns(10);
-		textField_12.setBounds(588, 584, 141, 27);
-		contentPane.add(textField_12);
-
-		final JCheckBox chckbxIndia = new JCheckBox("     INDIA");
-		chckbxIndia.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				if (chckbxIndia.isSelected()) {
-					textField_12.setText("INDIA");
-				}
+		countryTF = new JTextField();
+		countryTF.setText("INDIA");
+		countryTF.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		countryTF.setColumns(10);
+		countryTF.setBounds(447, 585, 141, 27);
+		countryTF.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(btnSave, e);
 			}
 		});
-		chckbxIndia.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		chckbxIndia.setBounds(446, 585, 128, 27);
-		contentPane.add(chckbxIndia);
-
-		JLabel lblTypeForAnother = new JLabel("[ TICK THE BOX FOR INDIA OR TYPE FOR ANOTHER COUNTRY ]");
-		lblTypeForAnother.setForeground(Color.GRAY);
-		lblTypeForAnother.setFont(new Font("Tahoma", Font.PLAIN, 9));
-		lblTypeForAnother.setBounds(447, 612, 333, 14);
-		contentPane.add(lblTypeForAnother);
+		contentPane.add(countryTF);
 
 		MaskFormatter mk;
 		try {
 			mk = new MaskFormatter("?????####?");
-			formattedTextField_1 = new JFormattedTextField(mk);
-			formattedTextField_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
-			formattedTextField_1.setOpaque(false);
+			panNoTF = new JFormattedTextField(mk);
+			panNoTF.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			panNoTF.setOpaque(false);
 		} catch (ParseException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
-		formattedTextField_1.addFocusListener(new FocusAdapter() {
+		panNoTF.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(panDateTF, e);
+			}
+		});
+
+		panNoTF.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				formattedTextField_1.setOpaque(false);
-				if (formattedTextField_1.hasFocus()) {
-					formattedTextField_1.setOpaque(true);
-					formattedTextField_1.setForeground(new Color(255, 255, 255));
-					formattedTextField_1.setBackground(Color.black);
+				panNoTF.setOpaque(false);
+				if (panNoTF.hasFocus()) {
+					panNoTF.setOpaque(true);
+					panNoTF.setForeground(new Color(255, 255, 255));
+					panNoTF.setBackground(Color.black);
 				}
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				formattedTextField_1.setForeground(Color.black);
-				formattedTextField_1.setBackground(new Color(240, 230, 140));
+				panNoTF.setForeground(Color.black);
+				panNoTF.setBackground(new Color(240, 230, 140));
 			}
 		});
-		formattedTextField_1.setBorder(null);
-		formattedTextField_1.setBounds(447, 512, 282, 25);
-		contentPane.add(formattedTextField_1);
+		panNoTF.setBorder(null);
+		panNoTF.setBounds(447, 512, 282, 25);
+		contentPane.add(panNoTF);
 
-		textField_3 = new JTextField();
-		textField_3.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		textField_3.setOpaque(false);
-		textField_3.addFocusListener(new FocusAdapter() {
+		add1TF = new JTextField();
+		add1TF.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		add1TF.setOpaque(false);
+		add1TF.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(add2TF, e);
+			}
+		});
+		add1TF.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				textField_3.setOpaque(false);
-				if (textField_3.hasFocus()) {
-					textField_3.setOpaque(true);
-					textField_3.setForeground(new Color(255, 255, 255));
-					textField_3.setBackground(Color.black);
+				add1TF.setOpaque(false);
+				if (add1TF.hasFocus()) {
+					add1TF.setOpaque(true);
+					add1TF.setForeground(new Color(255, 255, 255));
+					add1TF.setBackground(Color.black);
 				}
 			}
 
 			@Override
 			public void focusLost(FocusEvent arg0) {
-				textField_3.setForeground(Color.black);
-				textField_3.setBackground(new Color(240, 230, 140));
+				add1TF.setForeground(Color.black);
+				add1TF.setBackground(new Color(240, 230, 140));
 			}
 		});
-		textField_3.setColumns(10);
-		textField_3.setBorder(null);
-		textField_3.setBounds(447, 253, 282, 27);
-		contentPane.add(textField_3);
+		add1TF.setColumns(10);
+		add1TF.setBorder(null);
+		add1TF.setBounds(447, 253, 282, 27);
+		contentPane.add(add1TF);
 
-		JButton btnSave = new JButton("Save");
-		btnSave.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-
+		btnSave = new JButton("Save");
+		btnSave.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					savingCustomerDetail();
+					resetFields();
+					if(Invoice.isInvoiceVisible) {
+						Invoice.main(null);
+					}
+				}
+			}
+		});
+		btnSave.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
 				savingCustomerDetail();
-				resettingFields();
-
+				resetFields();
+				if(Invoice.isInvoiceVisible) {
+					Invoice.main(null);
+				}
 			}
 		});
+
 		btnSave.setBackground(Color.GREEN);
 		btnSave.setBounds(782, 676, 89, 23);
 		contentPane.add(btnSave);
 
 		JButton btnClear = new JButton("Clear");
+		btnClear.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				resetFields();
+			}
+		});
 		btnClear.setBackground(Color.ORANGE);
 		btnClear.setBounds(901, 676, 89, 23);
 		contentPane.add(btnClear);

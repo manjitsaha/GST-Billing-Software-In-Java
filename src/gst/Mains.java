@@ -2,7 +2,6 @@ package gst;
 
 import java.awt.Color;
 import java.awt.EventQueue;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.Toolkit;
@@ -11,24 +10,41 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
+
+import org.json.JSONObject;
+import javax.swing.SwingConstants;
+import java.awt.Rectangle;
+import javax.swing.border.LineBorder;
+import javax.swing.JToggleButton;
 
 public class Mains extends JFrame {
 
@@ -37,7 +53,7 @@ public class Mains extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField textField;
+	private JTextField txtAuthorisedUser;
 	private JInternalFrame fileinternal;
 	private JInternalFrame mastersinternal;
 	private JInternalFrame saleinternal;
@@ -68,18 +84,64 @@ public class Mains extends JFrame {
 	Connection con = null;
 	Statement st;
 	ResultSet rs;
+	private JTable table;
 
-	public void populateCompNameInAuthuser() {
+	public boolean checkIfDatabaseExist() {
+		/*
+		 * File f = new File("C:\\SimpleGST"); if(f.exists()) { return true; }
+		 */
+
+		String f = new File("").getAbsoluteFile() + "/src/dbs.json";
+
 		try {
-			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
-			st = con.createStatement();
-			rs = st.executeQuery("SELECT COMPANY_NAME FROM COMPANY");
-			while (rs.next()) {
-				textArea.setText(rs.getString("COMPANY_NAME"));
+			String contents = new String(Files.readAllBytes(Paths.get(f)));
+			JSONObject jsonobj = new JSONObject(contents);
+
+			String obj = jsonobj.getString("isDatabaseCreated");
+			if (obj.equals("false")) {
+				return false;
 			}
-		} catch (SQLException e) {
+
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+
+		return true;
+	}
+
+	public void stock() {
+
+		try {
+			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
+			String stk = "SELECT ITEM_NAME , STOCK FROM ADDITEMS WHERE STOCK <= " + Constants.STOCK_END_ALERT;
+			// System.out.println(stk);
+			PreparedStatement st = con.prepareStatement(stk);
+			rs = st.executeQuery();
+
+			// while(rs.next()){
+			table.setModel(net.proteanit.sql.DbUtils.resultSetToTableModel(rs));
+			// }
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+
+		}
+	}
+
+	public void populateCompNameInAuthuser() {
+		if (checkIfDatabaseExist()) {
+			try {
+				con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
+				st = con.createStatement();
+				rs = st.executeQuery("SELECT COMPANY_NAME FROM COMPANY");
+				while (rs.next()) {
+					textArea.setText(rs.getString("COMPANY_NAME"));
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -108,15 +170,6 @@ public class Mains extends JFrame {
 			settingsinternal.dispose();
 		}
 	}
-	
-	public boolean checkIfDatabaseExist() {
-		File f = new File("C:\\SimpleGSTsnacks");
-		if(f.exists()) {			
-			return true;
-		}
-		
-		return false;
-	}
 
 	public Mains() {
 		addMouseListener(new MouseAdapter() {
@@ -125,11 +178,12 @@ public class Mains extends JFrame {
 				closeInternalFrames();
 			}
 		});
+		Toolkit t = getToolkit();
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		String username = System.getProperty("user.name");
 		setTitle("Simple GST - C:/SimpleGST/GST " + "Username -" + username);
-		setSize(1383, 760);
+		setSize(t.getScreenSize().width, t.getScreenSize().height);
 		contentPane = new JPanel();
 		contentPane.addMouseListener(new MouseAdapter() {
 			@Override
@@ -142,7 +196,6 @@ public class Mains extends JFrame {
 		contentPane.setBackground(Color.GRAY);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(null);
 
 		try {
 			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -187,18 +240,38 @@ public class Mains extends JFrame {
 		button_9.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				CreatingTableAndPreData a = new CreatingTableAndPreData();
-				
-				if(checkIfDatabaseExist()) {
-					JOptionPane.showMessageDialog(getParent(), "Database already exist","Error",JOptionPane.WARNING_MESSAGE);
-					
-				}else {
+
+				if (checkIfDatabaseExist()) {
+					JOptionPane.showMessageDialog(getParent(), "Database already exist", "Error",
+							JOptionPane.WARNING_MESSAGE);
+
+				} else {
 					a.createDetails();
-					JOptionPane.showMessageDialog(getParent(), "Database created successfully","Success",JOptionPane.INFORMATION_MESSAGE);
-					
+					JOptionPane.showMessageDialog(getParent(), "Database created successfully", "Success",
+							JOptionPane.INFORMATION_MESSAGE);
+
+					try {
+						JSONObject obj = new JSONObject();
+						obj.put("isDatabaseCreated", "true");
+						FileWriter fw = new FileWriter(new File("").getAbsoluteFile() + "/src/dbs.json");
+						fw.write(obj.toString());
+
+						fw.flush();
+						fw.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
-				
+
 			}
 		});
+		SpringLayout sl_contentPane = new SpringLayout();
+		sl_contentPane.putConstraint(SpringLayout.NORTH, fileinternal, 153, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.WEST, fileinternal, 196, SpringLayout.WEST, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, fileinternal, 258, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.EAST, fileinternal, 323, SpringLayout.WEST, contentPane);
+		contentPane.setLayout(sl_contentPane);
 
 		button_9.setOpaque(false);
 		button_9.setMnemonic(KeyEvent.VK_N);
@@ -210,10 +283,13 @@ public class Mains extends JFrame {
 		button_9.setBounds(0, 0, 127, 55);
 		fileinternal.getContentPane().add(button_9);
 		fileinternal.setBorder(null);
-		fileinternal.setBounds(196, 153, 127, 105);
 		contentPane.add(fileinternal);
 
 		mastersinternal = new JInternalFrame();
+		sl_contentPane.putConstraint(SpringLayout.NORTH, mastersinternal, 153, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.WEST, mastersinternal, 196, SpringLayout.WEST, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, mastersinternal, 398, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.EAST, mastersinternal, 405, SpringLayout.WEST, contentPane);
 		mastersinternal.getContentPane().setLayout(null);
 		mastersinternal.getContentPane().setBackground(new Color(51, 51, 153));
 		BasicInternalFrameUI mi = (BasicInternalFrameUI) mastersinternal.getUI();
@@ -277,10 +353,13 @@ public class Mains extends JFrame {
 		button_15.setBounds(10, 102, 197, 43);
 		mastersinternal.getContentPane().add(button_15);
 		mastersinternal.setBorder(null);
-		mastersinternal.setBounds(196, 153, 209, 245);
 		contentPane.add(mastersinternal);
 
 		saleinternal = new JInternalFrame("New JInternalFrame");
+		sl_contentPane.putConstraint(SpringLayout.NORTH, saleinternal, 256, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.WEST, saleinternal, 195, SpringLayout.WEST, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, saleinternal, 410, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.EAST, saleinternal, 404, SpringLayout.WEST, contentPane);
 		saleinternal.getContentPane().setLayout(null);
 		saleinternal.getContentPane().setBackground(new Color(51, 51, 153));
 		BasicInternalFrameUI vi = (BasicInternalFrameUI) saleinternal.getUI();
@@ -301,10 +380,13 @@ public class Mains extends JFrame {
 		button_16.setBounds(0, 0, 209, 45);
 		saleinternal.getContentPane().add(button_16);
 		saleinternal.setBorder(null);
-		saleinternal.setBounds(195, 256, 209, 154);
 		contentPane.add(saleinternal);
 
 		transactioninternal = new JInternalFrame("");
+		sl_contentPane.putConstraint(SpringLayout.NORTH, transactioninternal, 430, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.WEST, transactioninternal, 196, SpringLayout.WEST, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, transactioninternal, 551, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.EAST, transactioninternal, 405, SpringLayout.WEST, contentPane);
 		transactioninternal.getContentPane().setLayout(null);
 		BasicInternalFrameUI ci = (BasicInternalFrameUI) transactioninternal.getUI();
 		ci.setNorthPane(null);
@@ -340,11 +422,13 @@ public class Mains extends JFrame {
 		transactioninternal.getContentPane().add(button_18);
 		transactioninternal.setBorder(null);
 		transactioninternal.setBackground(new Color(51, 51, 153));
-		transactioninternal.setBounds(196, 430, 209, 121);
 		contentPane.add(transactioninternal);
 
 		settingsinternal = new JInternalFrame("");
-		settingsinternal.setBounds(196, 503, 209, 112);
+		sl_contentPane.putConstraint(SpringLayout.NORTH, settingsinternal, 503, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.WEST, settingsinternal, 196, SpringLayout.WEST, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, settingsinternal, 615, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.EAST, settingsinternal, 405, SpringLayout.WEST, contentPane);
 		contentPane.add(settingsinternal);
 		settingsinternal.getContentPane().setLayout(null);
 		BasicInternalFrameUI xi = (BasicInternalFrameUI) settingsinternal.getUI();
@@ -367,24 +451,32 @@ public class Mains extends JFrame {
 		settingsinternal.setBorder(null);
 		settingsinternal.setBackground(new Color(51, 51, 153));
 
-		textField = new JTextField();
-		textField.addMouseListener(new MouseAdapter() {
+		txtAuthorisedUser = new JTextField();
+		txtAuthorisedUser.setHorizontalAlignment(SwingConstants.CENTER);
+		sl_contentPane.putConstraint(SpringLayout.NORTH, txtAuthorisedUser, 0, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.WEST, txtAuthorisedUser, 0, SpringLayout.WEST, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, txtAuthorisedUser, 32, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.EAST, txtAuthorisedUser, 196, SpringLayout.WEST, contentPane);
+		txtAuthorisedUser.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				closeInternalFrames();
 			}
 		});
-		textField.setText("Authorised User :-");
-		textField.setForeground(Color.RED);
-		textField.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		textField.setEditable(false);
-		textField.setColumns(10);
-		textField.setBorder(null);
-		textField.setBackground(Color.DARK_GRAY);
-		textField.setBounds(0, 0, 196, 32);
-		contentPane.add(textField);
+		txtAuthorisedUser.setText("   Authorised User :-");
+		txtAuthorisedUser.setForeground(Color.RED);
+		txtAuthorisedUser.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		txtAuthorisedUser.setEditable(false);
+		txtAuthorisedUser.setColumns(10);
+		txtAuthorisedUser.setBorder(null);
+		txtAuthorisedUser.setBackground(Color.DARK_GRAY);
+		contentPane.add(txtAuthorisedUser);
 
 		textArea = new JTextArea();
+		sl_contentPane.putConstraint(SpringLayout.NORTH, textArea, 31, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.WEST, textArea, 0, SpringLayout.WEST, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, textArea, 173, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.EAST, textArea, 196, SpringLayout.WEST, contentPane);
 		textArea.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -397,10 +489,13 @@ public class Mains extends JFrame {
 		textArea.setEditable(false);
 		textArea.setBorder(null);
 		textArea.setBackground(Color.DARK_GRAY);
-		textArea.setBounds(0, 31, 196, 142);
 		contentPane.add(textArea);
 
 		JLabel lblFile = new JLabel("     File");
+		sl_contentPane.putConstraint(SpringLayout.NORTH, lblFile, 144, SpringLayout.NORTH, textArea);
+		sl_contentPane.putConstraint(SpringLayout.WEST, lblFile, 0, SpringLayout.WEST, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, lblFile, 205, SpringLayout.NORTH, textArea);
+		sl_contentPane.putConstraint(SpringLayout.EAST, lblFile, 196, SpringLayout.WEST, contentPane);
 		lblFile.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -438,10 +533,13 @@ public class Mains extends JFrame {
 		lblFile.setBackground(Color.DARK_GRAY);
 		lblFile.setFont(new Font("Tahoma", Font.PLAIN, 19));
 		lblFile.setForeground(Color.WHITE);
-		lblFile.setBounds(0, 174, 196, 62);
 		contentPane.add(lblFile);
 
 		JLabel lblMasters = new JLabel("     Masters");
+		sl_contentPane.putConstraint(SpringLayout.NORTH, lblMasters, 237, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.WEST, lblMasters, 0, SpringLayout.WEST, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, lblMasters, 299, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.EAST, lblMasters, 196, SpringLayout.WEST, contentPane);
 		lblMasters.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -480,10 +578,13 @@ public class Mains extends JFrame {
 		lblMasters.setForeground(Color.WHITE);
 		lblMasters.setFont(new Font("Tahoma", Font.PLAIN, 19));
 		lblMasters.setBackground(Color.DARK_GRAY);
-		lblMasters.setBounds(0, 237, 196, 62);
 		contentPane.add(lblMasters);
 
 		JLabel lblSale = new JLabel("     Sale");
+		sl_contentPane.putConstraint(SpringLayout.NORTH, lblSale, 300, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.WEST, lblSale, 0, SpringLayout.WEST, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, lblSale, 362, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.EAST, lblSale, 196, SpringLayout.WEST, contentPane);
 		lblSale.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -520,10 +621,13 @@ public class Mains extends JFrame {
 		lblSale.setForeground(Color.WHITE);
 		lblSale.setFont(new Font("Tahoma", Font.PLAIN, 19));
 		lblSale.setBackground(Color.DARK_GRAY);
-		lblSale.setBounds(0, 300, 196, 62);
 		contentPane.add(lblSale);
 
 		JLabel label = new JLabel("     File");
+		sl_contentPane.putConstraint(SpringLayout.NORTH, label, 363, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.WEST, label, 0, SpringLayout.WEST, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, label, 425, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.EAST, label, 196, SpringLayout.WEST, contentPane);
 		label.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent arg0) {
@@ -539,10 +643,13 @@ public class Mains extends JFrame {
 		label.setForeground(Color.WHITE);
 		label.setFont(new Font("Tahoma", Font.PLAIN, 19));
 		label.setBackground(Color.DARK_GRAY);
-		label.setBounds(0, 363, 196, 62);
 		contentPane.add(label);
 
 		JLabel label_1 = new JLabel("     File");
+		sl_contentPane.putConstraint(SpringLayout.NORTH, label_1, 426, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.WEST, label_1, 0, SpringLayout.WEST, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, label_1, 488, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.EAST, label_1, 196, SpringLayout.WEST, contentPane);
 		label_1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent arg0) {
@@ -558,10 +665,13 @@ public class Mains extends JFrame {
 		label_1.setForeground(Color.WHITE);
 		label_1.setFont(new Font("Tahoma", Font.PLAIN, 19));
 		label_1.setBackground(Color.DARK_GRAY);
-		label_1.setBounds(0, 426, 196, 62);
 		contentPane.add(label_1);
 
 		JLabel lblTransaction = new JLabel("     Transactions");
+		sl_contentPane.putConstraint(SpringLayout.NORTH, lblTransaction, 489, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.WEST, lblTransaction, 0, SpringLayout.WEST, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, lblTransaction, 551, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.EAST, lblTransaction, 196, SpringLayout.WEST, contentPane);
 		lblTransaction.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -598,10 +708,13 @@ public class Mains extends JFrame {
 		lblTransaction.setForeground(Color.WHITE);
 		lblTransaction.setFont(new Font("Tahoma", Font.PLAIN, 19));
 		lblTransaction.setBackground(Color.DARK_GRAY);
-		lblTransaction.setBounds(0, 489, 196, 62);
 		contentPane.add(lblTransaction);
 
 		JLabel lblSettings = new JLabel("     Settings");
+		sl_contentPane.putConstraint(SpringLayout.NORTH, lblSettings, 552, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.WEST, lblSettings, 0, SpringLayout.WEST, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, lblSettings, 614, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.EAST, lblSettings, 196, SpringLayout.WEST, contentPane);
 		lblSettings.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -639,10 +752,46 @@ public class Mains extends JFrame {
 		lblSettings.setForeground(Color.WHITE);
 		lblSettings.setFont(new Font("Tahoma", Font.PLAIN, 19));
 		lblSettings.setBackground(Color.DARK_GRAY);
-		lblSettings.setBounds(0, 552, 196, 62);
 		contentPane.add(lblSettings);
 
+		JScrollPane scrollPane = new JScrollPane();
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, scrollPane, 8, SpringLayout.SOUTH, settingsinternal);
+		sl_contentPane.putConstraint(SpringLayout.EAST, scrollPane, 0, SpringLayout.EAST, contentPane);
+		scrollPane.setBackground(Color.DARK_GRAY);
+		contentPane.add(scrollPane);
+
+		table = new JTable();
+		table.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		table.setRowHeight(25);
+		table.setRowMargin(9);
+		table.setBackground(Color.DARK_GRAY);
+		table.setForeground(Color.white);
+		scrollPane.setForeground(Color.GRAY);
+		scrollPane.setColumnHeaderView(table);
+		
+		JLabel lblNewLabel = new JLabel("ENDING STOCKS");
+		sl_contentPane.putConstraint(SpringLayout.NORTH, scrollPane, 11, SpringLayout.SOUTH, lblNewLabel);
+		sl_contentPane.putConstraint(SpringLayout.NORTH, lblNewLabel, 0, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.WEST, lblNewLabel, 1037, SpringLayout.EAST, txtAuthorisedUser);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, lblNewLabel, -774, SpringLayout.SOUTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.EAST, lblNewLabel, -5, SpringLayout.EAST, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.WEST, scrollPane, 0, SpringLayout.WEST, lblNewLabel);
+		lblNewLabel.setOpaque(true);
+		lblNewLabel.setBorder(new LineBorder(new Color(0, 0, 0)));
+		lblNewLabel.setBackground(Color.DARK_GRAY);
+		lblNewLabel.setForeground(Color.RED);
+		lblNewLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		contentPane.add(lblNewLabel);
+		
+		JToggleButton tglbtnNewToggleButton = new JToggleButton("New toggle button");
+		contentPane.add(tglbtnNewToggleButton);
+
 		turnoncapslock();
-		populateCompNameInAuthuser();
+		if (checkIfDatabaseExist()) {
+			populateCompNameInAuthuser();
+			stock();
+		}
 	}
 }

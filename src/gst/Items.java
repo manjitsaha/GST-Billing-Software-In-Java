@@ -27,22 +27,18 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
-import net.sf.jasperreports.engine.data.JRTableModelDataSource;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Rectangle;
-import java.awt.event.InputMethodListener;
-import java.awt.event.InputMethodEvent;
-
 public class Items extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JLabel label;
 	private JTextField itemname;
@@ -53,7 +49,7 @@ public class Items extends JFrame {
 	private JLabel label_4;
 	private JFormattedTextField salerate;
 	private JLabel label_5;
-	private JComboBox comboBox_1;
+	private JComboBox taxComboBox;
 	private JFormattedTextField purchaserate;
 	private JLabel label_6;
 	private JButton btnSave;
@@ -120,7 +116,7 @@ public class Items extends JFrame {
 		PreparedStatement st = null;
 
 		try {
-			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 			String h = "SELECT * FROM ADDITEMS";
 			st = con.prepareStatement(h);
 			rs = st.executeQuery();
@@ -145,7 +141,7 @@ public class Items extends JFrame {
 		purchaserate.setText("");
 		stock.setText("");
 		mfgtext.setText("");
-		comboBox_1.setSelectedIndex(0);
+		taxComboBox.setSelectedIndex(0);
 
 	}
 
@@ -163,10 +159,10 @@ public class Items extends JFrame {
 				String sale = salerate.getText();
 				String purchase = purchaserate.getText();
 				String stck = stock.getText();
-				String tx = comboBox_1.getSelectedItem().toString();
+				String tx = taxComboBox.getSelectedItem().toString();
 				String mfg = mfgtext.getText();
 
-				Connection con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+				Connection con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 
 				PreparedStatement ps = con.prepareStatement("insert into additems values(?,?,?,?,?,?,?,?)");
 
@@ -201,6 +197,7 @@ public class Items extends JFrame {
 	private JLabel itemcount;
 	private JLabel lblNewLabel_1;
 	private JTextField searchTF;
+	private JTable suggestionTable;
 
 	public void copyItemname() {
 		DefaultTableModel mt = (DefaultTableModel) table.getModel();
@@ -211,7 +208,7 @@ public class Items extends JFrame {
 
 		String sql = "DELETE FROM ADDITEMS WHERE ITEM_NAME = '" + name + "'";
 		try {
-			Connection con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+			Connection con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 			Statement st = con.createStatement();
 			st.execute(sql);
 			// System.out.println("deleted");
@@ -229,7 +226,7 @@ public class Items extends JFrame {
 		blankFields();
 	}
 
-	public void setRowToEdit() {
+	public void setRowToEdit(JTable table) {
 		DefaultTableModel mt = (DefaultTableModel) table.getModel();
 		String batch = (String) mt.getValueAt(table.getSelectedRow(), 0);
 		String itemnam = (String) mt.getValueAt(table.getSelectedRow(), 1);
@@ -247,7 +244,7 @@ public class Items extends JFrame {
 		sac.setText(sachsn);
 		salerate.setText(sr);
 		purchaserate.setText(pr);
-		comboBox_1.setSelectedItem(tax);
+		taxComboBox.setSelectedItem(tax);
 		stock.setText(stk);
 }
 
@@ -259,11 +256,11 @@ public class Items extends JFrame {
 		String sale = salerate.getText();
 		String purchase = purchaserate.getText();
 		String stck = stock.getText();
-		String tx = comboBox_1.getSelectedItem().toString();
+		String tx = taxComboBox.getSelectedItem().toString();
 		String mg = mfgtext.getText();
 
 		try {
-			Connection con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+			Connection con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 			String sql = "update additems set batch ='" + batch + "' ,  item_name = '" + item + "' ,   manufacturer = '" + mg + "', sac_hsn = '" + hsn + "',sale_rate = '" + sale
 					+ "', purchase_rate = '" + purchase + "', tax = '" + tx + "',stock = '" + stck + "' where item_name = '" + item1 + "'";
 			Statement st = con.createStatement();
@@ -282,6 +279,11 @@ public class Items extends JFrame {
 
 		KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
 		Action escapeAction = new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 			}
@@ -290,11 +292,11 @@ public class Items extends JFrame {
 		getRootPane().getActionMap().put("ESCAPE", escapeAction);
 	}
 
-	public void searchItem() {
-		String sql = "SELECT * FROM ADDITEMS WHERE item_name LIKE '%"+searchTF.getText()+"%' ";
+	public void searchItem(JTable table, String query) {
+		String sql = "SELECT * FROM ADDITEMS WHERE item_name LIKE '%"+query+"%' ";
 		
 		try {
-			Connection con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+			Connection con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 			PreparedStatement ps = con.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
 			table.setModel(net.proteanit.sql.DbUtils.resultSetToTableModel(rs));
@@ -318,12 +320,46 @@ public class Items extends JFrame {
 		label.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		label.setBounds(258, 101, 81, 21);
 		contentPane.add(label);
+		
+		JPanel panel_2 = new JPanel();
+		panel_2.setBounds(361, 130, 522, 158);
+		panel_2.setVisible(false);
+		contentPane.add(panel_2);
+		panel_2.setLayout(null);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(0, 0, 522, 158);
+		panel_2.add(scrollPane_1);
+		
+		suggestionTable = new JTable();
+		suggestionTable.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				setRowToEdit(suggestionTable);
+				panel_2.setVisible(false);
+			}
+		});
+		suggestionTable.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		
+		scrollPane_1.setColumnHeaderView(suggestionTable);
 
 		itemname = new JTextField();
 		itemname.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		itemname.setColumns(10);
 		itemname.setBorder(null);
 		itemname.setBounds(361, 101, 522, 28);
+		itemname.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(sac , e);
+				panel_2.setVisible(true);
+				searchItem(suggestionTable, itemname.getText());
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					panel_2.setVisible(false);
+				}
+			}
+			
+		});
 		contentPane.add(itemname);
 
 		label_1 = new JLabel("SAC/HSN");
@@ -336,6 +372,13 @@ public class Items extends JFrame {
 		sac.setBorder(null);
 		sac.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		sac.setBounds(1041, 101, 124, 28);
+		sac.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(stock , e);
+			}
+			
+		});
 		contentPane.add(sac);
 
 		label_3 = new JLabel("Stock");
@@ -349,6 +392,13 @@ public class Items extends JFrame {
 		stock.setBorder(null);
 		stock.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		stock.setBounds(361, 143, 90, 28);
+		stock.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(salerate , e);
+			}
+			
+		});
 		contentPane.add(stock);
 
 		label_4 = new JLabel("Sale Rate");
@@ -362,6 +412,13 @@ public class Items extends JFrame {
 		salerate.setBorder(null);
 		salerate.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		salerate.setBounds(578, 146, 124, 28);
+		salerate.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(purchaserate , e);
+			}
+			
+		});
 		contentPane.add(salerate);
 
 		label_5 = new JLabel("Purchase Rate");
@@ -370,17 +427,15 @@ public class Items extends JFrame {
 		contentPane.add(label_5);
 
 		String[] tax = { "0", "5", "12", "18", "28" };
-		comboBox_1 = new JComboBox(tax);
-		comboBox_1.addKeyListener(new KeyAdapter() {
+		taxComboBox = new JComboBox(tax);
+		taxComboBox.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-				//	cessrate.requestFocus();
-				}
+				CommonFunctions.requestFocus(mfgtext , e);
 			}
 		});
-		comboBox_1.setBounds(361, 202, 71, 23);
-		contentPane.add(comboBox_1);
+		taxComboBox.setBounds(361, 202, 71, 23);
+		contentPane.add(taxComboBox);
 
 		purchaserate = new JFormattedTextField(new RegexFormatter("[\\d.?]{0,10}"));
 		purchaserate.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -388,6 +443,13 @@ public class Items extends JFrame {
 		purchaserate.setBorder(null);
 		purchaserate.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		purchaserate.setBounds(861, 147, 124, 28);
+		purchaserate.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(taxComboBox , e);
+			}
+			
+		});
 		contentPane.add(purchaserate);
 
 		label_6 = new JLabel("Tax ");
@@ -442,11 +504,13 @@ public class Items extends JFrame {
 
 		table = new JTable();
 		table.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		table.setRowMargin(9);
+		table.setRowHeight(30);
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				copyItemname();
-				setRowToEdit();
+				setRowToEdit(table);
 			}
 		});
 		table.addKeyListener(new KeyAdapter() {
@@ -507,7 +571,15 @@ public class Items extends JFrame {
 		mfgtext.setColumns(10);
 		mfgtext.setBorder(null);
 		mfgtext.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		mfgtext.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(btnSave , e);
+			}
+			
+		});
 		mfgtext.setBounds(578, 197, 412, 28);
+		
 		contentPane.add(mfgtext);
 
 		label_22 = new JLabel("*");
@@ -569,6 +641,13 @@ public class Items extends JFrame {
 		contentPane.add(label_36);
 
 		Batchtxt = new JTextField();
+		Batchtxt.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				CommonFunctions.requestFocus(itemname , e);
+			}
+			
+		});
 		Batchtxt.setColumns(10);
 		Batchtxt.setBorder(null);
 		Batchtxt.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -604,7 +683,7 @@ public class Items extends JFrame {
 		searchTF.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				searchItem();
+				searchItem(table ,searchTF.getText());
 				if(searchTF.getText() == "") {
 					itemlist();
 				}
@@ -615,6 +694,8 @@ public class Items extends JFrame {
 		searchTF.setBounds(286, 434, 273, 25);
 		contentPane.add(searchTF);
 		searchTF.setColumns(10);
+		
+		
 
 		itemlist();
 		closeFrame();

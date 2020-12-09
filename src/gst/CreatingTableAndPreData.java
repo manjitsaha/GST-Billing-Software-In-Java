@@ -20,7 +20,7 @@ public class CreatingTableAndPreData {
 			
 			//items table
 			
-			 con=DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks","sa","");
+			 con=DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST","sa","");
 			 st = con.createStatement();
 	 		String q = "CREATE TABLE additems"
 					+ "(Batch varchar(255),"

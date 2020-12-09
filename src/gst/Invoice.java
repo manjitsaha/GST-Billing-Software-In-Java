@@ -27,8 +27,10 @@ import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -50,7 +52,9 @@ import net.sf.jasperreports.view.JasperViewer;
 
 public class Invoice extends JFrame implements Runnable {
 
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	private JButton newCustomer;
 	public static JTextField billnotext;
 	public static JTextField datebox;
 	private JTextField sachsntext;
@@ -110,6 +114,7 @@ public class Invoice extends JFrame implements Runnable {
 	private JLabel itemcount;
 	private JLabel discountedlbl;
 	Thread t = null;
+	public static boolean isInvoiceVisible = true;
 
 	/**
 	 * Launch the application.
@@ -150,7 +155,7 @@ public class Invoice extends JFrame implements Runnable {
 			rs = st.executeQuery(query);
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -158,7 +163,11 @@ public class Invoice extends JFrame implements Runnable {
 
 		KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
 		Action escapeAction = new AbstractAction() {
+
+			private static final long serialVersionUID = 1L;
+
 			public void actionPerformed(ActionEvent e) {
+				isInvoiceVisible = false;
 				dispose();
 			}
 		};
@@ -169,7 +178,7 @@ public class Invoice extends JFrame implements Runnable {
 
 	public void populateCompDetails() {
 		try {
-			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 			commonMethodForSt("select * from company");
 			while (rs.next()) {
 				compname.setText(rs.getString("company_name"));
@@ -184,7 +193,7 @@ public class Invoice extends JFrame implements Runnable {
 				compwebsite.setText(rs.getString("website"));
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 
@@ -193,14 +202,13 @@ public class Invoice extends JFrame implements Runnable {
 	public void populatename() {
 		try {
 			Class.forName("org.h2.Driver");
-			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 			namecombo.addItem("_");
 			commonMethodForSt("SELECT * FROM CUSTOMERS ORDER BY NAME ASC ");
 			while (rs.next()) {
 				namecombo.addItem(rs.getString("name"));
 			}
 		} catch (SQLException | ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -209,7 +217,7 @@ public class Invoice extends JFrame implements Runnable {
 	public void populateNameDetail() {
 		try {
 
-			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 			String name = namecombo.getSelectedItem().toString();
 			commonMethodForSt("SELECT * FROM CUSTOMERS WHERE NAME = '" + name + "'");
 			if (rs.next()) {
@@ -224,7 +232,6 @@ public class Invoice extends JFrame implements Runnable {
 
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -232,14 +239,13 @@ public class Invoice extends JFrame implements Runnable {
 
 	public void populateItemCombo() {
 		try {
-			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 			itemcombo.addItem("_");
 			commonMethodForSt("SELECT * FROM ADDITEMS ORDER BY ITEM_NAME ASC");
 			while (rs.next()) {
 				itemcombo.addItem(rs.getString("item_name"));
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -247,7 +253,7 @@ public class Invoice extends JFrame implements Runnable {
 	public void populateItemNameAndDetails() {
 		try {
 			Class.forName("org.h2.Driver");
-			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 			qtytext.setText("1");
 			discounttext.setText("0");
 
@@ -264,10 +270,8 @@ public class Invoice extends JFrame implements Runnable {
 
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -403,9 +407,31 @@ public class Invoice extends JFrame implements Runnable {
 		total.setText(l);
 	}
 
+	public boolean checkIfItemExist() {
+		for (int i = 0; i < table.getRowCount(); i++) {
+			if (model_table.getValueAt(i, 1).equals(itemcombo.getSelectedItem().toString())) {
+				return true;
+
+			}
+		}
+		return false;
+	}
+
 	public void setItemDetailInTable() {
 
-		Object row[] = new Object[20];
+		Object row[] = new Object[9];
+
+		for (int i = 0; i < table.getRowCount(); i++) {
+			if (model_table.getValueAt(i, 1).equals(itemcombo.getSelectedItem().toString())) {
+
+				minnusdiscamtondel(i);
+				decreasebelowtax(i);
+				deletingRow(i);
+				countitem();
+				addingTotalAmount();
+
+			}
+		}
 
 		row[0] = batchtxt.getText();
 		row[1] = itemcombo.getSelectedItem().toString();
@@ -422,37 +448,65 @@ public class Invoice extends JFrame implements Runnable {
 			model_table.setRowCount(24);
 		}
 		itemcombo.requestFocus();
+
 	}
 
-	public void setAllFieldToZero() {
+	public void resetFields() {
+		// item details
+		batchtxt.setText("");
+		stocktext.setText("");
+		cgstamount.setText("");
+		sgstamount.setText("");
+		sachsntext.setText("");
+		qtytext.setText("");
+		pricetext.setText("");
+		taxtext.setText("");
+		taxablevalue.setText("");
+		taxratetext.setText("");
+		discounttext.setText("");
+		discounted.setText("");
+		cgstrate.setText("");
+		sgstrate.setText("");
+		itemcombo.setSelectedIndex(0);
+		mfgtext.setText("");
 
-		sachsntext.setText("0");
-		qtytext.setText("0");
-		pricetext.setText("0");
-		taxtext.setText("0");
-		taxablevalue.setText("0");
-		taxratetext.setText("0");
-		discounttext.setText("0");
-		discounted.setText("0");
-		cgstamount.setText("0");
-		cgstrate.setText("0");
-		sgstamount.setText("0");
-		sgstrate.setText("0");
-		total.setText("0");
-		custadd1.setText(" ");
-		custadd2.setText(" ");
-		custmob.setText(" ");
+		// customer details
+		custtype.setText("");
+		custadd1.setText("");
+		custadd2.setText("");
+		custmob.setText("");
+		custState.setText("");
+		custPin.setText("");
+		custCountry.setText("");
+		custGstin.setText("");
 		namecombo.setSelectedIndex(0);
 		namecombo.requestFocus();
-		
-		itemcombo.setSelectedIndex(0);
-		paidtxt.setText("0");
-		duetxt.setText("0");	
+
+		// transaction details
+		paidtxt.setText("");
+		duetxt.setText("");
+		total.setText("");
+		totalamountlabel.setText("0.0");
+		grandtotallabel.setText("0.0");
+		discountedlbl.setText("0.0");
+
+		// tax rates
+		cgst2lbl.setText("0.0");
+		cgst6lbl.setText("0.0");
+		cgst9lbl.setText("0.0");
+		cgst14lbl.setText("0.0");
+		sgst2lbl.setText("0.0");
+		sgst6lbl.setText("0.0");
+		sgst9lbl.setText("0.0");
+		sgst14lbl.setText("0.0");
+
+		itemcount.setText("0");
+
 	}
 
 	public void IncreasingBillNo() {
 		try {
-			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 			commonMethodForSt("select max(NO) from BILL_NO");
 
 			while (rs.next()) {
@@ -464,7 +518,7 @@ public class Invoice extends JFrame implements Runnable {
 			}
 
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 
@@ -473,13 +527,12 @@ public class Invoice extends JFrame implements Runnable {
 	public void insertingBillNoIntoDatabase() {
 		try {
 
-			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 			PreparedStatement ps = con.prepareStatement("insert into bill_no values(?)");
 			ps.setString(1, billnotext.getText());
 			ps.execute();
 
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -506,11 +559,10 @@ public class Invoice extends JFrame implements Runnable {
 		totalamountlabel.setText(d);
 	}
 
-	public void deletingRow() {
-		int i = table.getSelectedRow();
+	public void deletingRow(int index) {
 
-		if (i >= 0) {
-			model_table.removeRow(i);
+		if (index >= 0) {
+			model_table.removeRow(index);
 		}
 
 		float total = 0;
@@ -537,7 +589,7 @@ public class Invoice extends JFrame implements Runnable {
 
 		// String fp = stocktext.getText();
 		try {
-			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 			// String stock = itemcombo.getSelectedItem().toString();
 
 			for (int i = 0; i < table.getRowCount(); i++) {
@@ -552,7 +604,7 @@ public class Invoice extends JFrame implements Runnable {
 
 			}
 
-		} catch (SQLException e) { // TODO Auto-generated catch block
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
@@ -594,7 +646,7 @@ public class Invoice extends JFrame implements Runnable {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+
 				e.printStackTrace();
 			}
 		}
@@ -644,16 +696,20 @@ public class Invoice extends JFrame implements Runnable {
 		System.out.println(name + bill + date);
 		float duee = Float.parseFloat(due);
 
-		if (duee > 0) {
+		if (duee > 0.0) {
 			try {
-				con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+				Class.forName("org.h2.Driver");
+				con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 				String sql = "INSERT INTO DUES(Bill_No ,Date , Customer_name ,  Grand_Total , paid , Dues) VALUES ('"
 						+ name + bill + date + "' ," + "'" + date + "', " + "'" + name1 + "' ," + " '"
 						+ Float.parseFloat(Gtot) + "' , " + "'" + Float.parseFloat(paid) + "' ," + "'" + duee + "')";
 
 				PreparedStatement ps = con.prepareStatement(sql);
 				ps.execute();
+				System.out.println("inserted in due");
 			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -681,12 +737,12 @@ public class Invoice extends JFrame implements Runnable {
 
 	}
 
-	public void minnusdiscamtondel() {
+	public void minnusdiscamtondel(int index) {
 
 		DefaultTableModel mt = (DefaultTableModel) table.getModel();
-		String disc = mt.getValueAt(table.getSelectedRow(), 7).toString();
+		String disc = mt.getValueAt(index, 7).toString();
 		float di = Float.parseFloat(disc);
-		String price = mt.getValueAt(table.getSelectedRow(), 5).toString();
+		String price = mt.getValueAt(index, 5).toString();
 		float pr = Float.parseFloat(price);
 		float per = pr * di / 100;
 
@@ -758,12 +814,12 @@ public class Invoice extends JFrame implements Runnable {
 		}
 	}
 
-	public void decreasebelowtax() {
+	public void decreasebelowtax(int index) {
 		DefaultTableModel mt = (DefaultTableModel) table.getModel();
 
-		String gt = mt.getValueAt(table.getSelectedRow(), 6).toString();
+		String gt = mt.getValueAt(index, 6).toString();
 		float t = Float.parseFloat(gt);
-		String g = mt.getValueAt(table.getSelectedRow(), 5).toString();
+		String g = mt.getValueAt(index, 5).toString();
 		float gp = Float.parseFloat(g);
 		float gg = gp * t / 100;
 		float tot = gg / 2;
@@ -836,7 +892,7 @@ public class Invoice extends JFrame implements Runnable {
 
 		try {
 			Class.forName("org.h2.Driver");
-			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks", "sa", "");
+			con = DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST", "sa", "");
 
 			HashMap param = new HashMap();
 
@@ -891,14 +947,12 @@ public class Invoice extends JFrame implements Runnable {
 			JasperPrint jp = JasperFillManager.fillReport(jr, param, con);
 			JasperViewer jv = new JasperViewer(jp, false);
 			jv.setVisible(true);
-			
-			
+
 			System.out.println("success print");
-			setAllFieldToZero();		
+			resetFields();
 			IncreasingBillNo();
 
 		} catch (SQLException | JRException | ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -927,6 +981,7 @@ public class Invoice extends JFrame implements Runnable {
 		namecombo.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
+
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					itemcombo.requestFocus();
 					namelbl.setText(namecombo.getSelectedItem().toString().replaceAll(" ", "_"));
@@ -970,7 +1025,7 @@ public class Invoice extends JFrame implements Runnable {
 		datebox.setColumns(10);
 
 		JSeparator separator = new JSeparator();
-		separator.setBounds(208, 161, 990, 2);
+		separator.setBounds(202, 160, 984, 7);
 		contentPane.add(separator);
 
 		JLabel lblItemName = new JLabel("Item Name ");
@@ -982,9 +1037,8 @@ public class Invoice extends JFrame implements Runnable {
 		itemcombo.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					qtytext.requestFocus();
-				}
+				CommonFunctions.requestFocus(qtytext, e);
+
 			}
 		});
 		itemcombo.addActionListener(new ActionListener() {
@@ -1090,16 +1144,20 @@ public class Invoice extends JFrame implements Runnable {
 		contentPane.add(scrollPane);
 
 		table = new JTable();
+
 		table.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		table.setRowMargin(9);
+		table.setRowHeight(22);
 		table.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-					minnusdiscamtondel();
-					decreasebelowtax();
-					deletingRow();
+					minnusdiscamtondel(table.getSelectedRow());
+					decreasebelowtax(table.getSelectedRow());
+					deletingRow(table.getSelectedRow());
 					countitem();
 					addingTotalAmount();
+
 				}
 			}
 		});
@@ -1114,12 +1172,17 @@ public class Invoice extends JFrame implements Runnable {
 		final JButton btnPrint = new JButton("Print");
 		btnPrint.setMnemonic('p');
 		btnPrint.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				printInvoice();
-				StockUpdate();
+				if (table.getRowCount() > 0) {
+					printInvoice();
+					StockUpdate();
+					dispose();
+					Invoice.main(null);
+				}else {
+					JOptionPane.showMessageDialog(getParent(), "No items added" , "Error",JOptionPane.WARNING_MESSAGE);
+				}
 
 			}
 		});
@@ -1127,14 +1190,19 @@ public class Invoice extends JFrame implements Runnable {
 			@Override
 			public void keyPressed(KeyEvent e) {
 
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER && table.getRowCount() > 0) {
+
 					printInvoice();
 					StockUpdate();
+					dispose();
+					Invoice.main(null);
+
+				}else {
+					JOptionPane.showMessageDialog(getParent(), "No items added" , "Error",JOptionPane.WARNING_MESSAGE);
 
 				}
 			}
 		});
-		
 
 		btnPrint.setBounds(1035, 674, 89, 23);
 		contentPane.add(btnPrint);
@@ -1371,7 +1439,7 @@ public class Invoice extends JFrame implements Runnable {
 		contentPane.add(timebox);
 
 		namelbl = new JLabel("");
-		namelbl.setForeground(Color.BLACK);
+		namelbl.setForeground(new Color(240, 230, 140));
 		namelbl.setBounds(384, 60, 139, 14);
 		contentPane.add(namelbl);
 
@@ -1388,7 +1456,7 @@ public class Invoice extends JFrame implements Runnable {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					setDue();					
+					setDue();
 					btnPrint.requestFocus();
 				}
 			}
@@ -1628,6 +1696,31 @@ public class Invoice extends JFrame implements Runnable {
 		panel_1.setBackground(Color.GRAY);
 		panel_1.setBounds(1185, 0, 198, 760);
 		contentPane.add(panel_1);
+
+		newCustomer = new JButton("New button");
+		newCustomer.setBorder(null);
+		newCustomer.setBounds(240, 68, 85, 21);
+		newCustomer.setBackground(new Color(240, 230, 140));
+		newCustomer.setForeground(new Color(240, 230, 140));
+		newCustomer.setMnemonic('N');
+		newCustomer.addFocusListener(new FocusAdapter() {
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				namecombo.requestFocus();
+
+			}
+		});
+		newCustomer.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AddCustomer.main(null);
+				dispose();
+
+			}
+		});
+		contentPane.add(newCustomer);
 
 		populateCompDetails();
 		populatename();

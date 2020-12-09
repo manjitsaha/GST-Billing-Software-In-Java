@@ -27,7 +27,7 @@ public class CreateInvoiceTable  {
 	  System.out.println(name+bill+date);
 	    
 	try {
-			con =  DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GST/INVOICESsnacks","sa","");
+			con =  DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST/INVOICESsnacks","sa","");
 			 st = con.createStatement();
 		
 		String sql = "CREATE TABLE "+name+bill+date+""
@@ -93,7 +93,7 @@ public class CreateInvoiceTable  {
 	{
 		
 		try {
-			con =  DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks","sa","");
+			con =  DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST","sa","");
 			 st = con.createStatement();
 				DefaultTableModel mt = (DefaultTableModel)Invoice.table.getModel();
 				for(int i = 0 ; i<Invoice.table.getRowCount(); i++) {
@@ -130,7 +130,7 @@ public class CreateInvoiceTable  {
 	
 	public void deleteTempInv() {
 		try {
-			con =  DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks","sa","");
+			con =  DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST","sa","");
 			 st = con.createStatement();
 			 
 			 String del = "DROP TABLE TEMPINV";
@@ -147,7 +147,7 @@ public class CreateInvoiceTable  {
 	public void createTempTable() {
 		
 		try {
-			con =  DriverManager.getConnection("jdbc:h2:C:/SimpleGSTsnacks/GSTsnacks","sa","");
+			con =  DriverManager.getConnection("jdbc:h2:C:/SimpleGST/GST","sa","");
 			 st = con.createStatement();
 			 String tempinv = "CREATE TABLE TEMPINV"
 					 + "(Sr int auto_increment,"
